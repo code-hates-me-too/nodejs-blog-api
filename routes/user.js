@@ -4,7 +4,7 @@ const router = express.Router();
 
 const data = {
     title: "Blog App",
-    categories: ["Web Geliştirme", "Mobil Uygulamalar", "Veri Analizi", "Programlama"],
+    categories: ["Web Geliştirme", "Mobil Uygulamalar", "Veri Analizi", "Programlama", "Mrogramlama"],
     blogs: [
         {
             blogid: 1,
