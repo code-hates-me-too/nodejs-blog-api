@@ -20,9 +20,7 @@
                 <h1 class="h3 mb-3">Anasayfa</h1>
 
                     <% blogs.forEach(blog => { %>
-                        <% if (blog.anasayfa && blog.onay) { %>
                             <%- include('../partials/blog-card', { blog }) %>
-                        <% } %>
                     <% }) %>
 
             </div>
