@@ -1,17 +1,36 @@
 <div class="card mb-3">
     <div class="row">
         <div class="col-md-4">
-            <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+            <a href="/blogs/<%= blog.blogid %>"><img src="/static/images/<%= blog.resim %>" class="img-fluid" alt=""></a>
         </div>
         <div class="col-md-8">
             <div class="card-body">
                 <h5 class="card-title">
-                    <%= blog.baslik %>
+                    <a style="text-decoration: none; color: black;" href="/blogs/<%= blog.blogid %>"><%= blog.baslik %></a>
                 </h5>
                 <p class="card-text">
-                    <%= blog.aciklama %>
+                    <a style="text-decoration: none; color: black;" href="/blogs/<%= blog.blogid %>"><%= blog.aciklama %></a>
                 </p>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Etkileşimi farklı versiyon -->
+
+<!-- <a href="/blogs/<%= blog.blogid %>" class="text-decoration-none text-dark">
+    <div class="card mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="/static/images/<%= blog.resim %>" class="img-fluid">
+            </div>
+
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5><%= blog.baslik %></h5>
+                    <p><%= blog.aciklama %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</a> -->
