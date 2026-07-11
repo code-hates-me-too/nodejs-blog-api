@@ -3,6 +3,29 @@ const path = require("path");
 const router = express.Router();
 const db = require("../data/db");
 
+router.get("/blog/delete/:blogid", async (req, res) => {
+    const delblogid = req.params.blogid;
+    try {
+        const [blog, ] = await db.execute("SELECT * FROM blog WHERE blogid=?", [delblogid]);
+        res.render("admins/blog-delete", {
+            title: "Delete Blog",
+            blog: blog[0]
+        });
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+router.post("/blog/delete/:blogid", async (req, res) => {
+    const delblogid = req.body.blogid;
+    try {
+        await db.execute("DELETE FROM blog WHERE blogid=?", [delblogid]);
+        res.redirect("/admin/blogs?action=delete");
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 router.get("/blogs/create", async (req, res) => {
     try {
         const [categories, ] = await db.execute("SELECT * FROM category") 
@@ -28,7 +51,7 @@ router.post("/blogs/create", async (req, res) => {
     try {
         await db.execute(`INSERT INTO blog(baslik, aciklama, resim, anasayfa, onay, categoryid)
         VALUES (?,?,?,?,?,?)`, [baslik, aciklama, resim, anasayfa, onay, kategori]);
-        res.redirect("/");
+        res.redirect("/admin/blogs?action=create");
     } catch (err) {
         console.log(err);
     }
@@ -69,7 +92,7 @@ router.post("/blogs/:blogid", async (req, res) => {
     try {
         await db.execute("UPDATE blog SET baslik=?, aciklama=?, resim=?, anasayfa=?, onay=?, categoryid=? WHERE blogid=?",
         [baslik, aciklama, resim, anasayfa, onay, kategori, blogid]);
-        res.redirect("/admin/blogs");
+        res.redirect("/admin/blogs?action=edit");
     } catch (err) {
         console.log(err);
     }
@@ -81,7 +104,8 @@ router.get("/blogs", async (req, res) => {
         
         res.render("admins/blog-list", {
             title: "Edit Blogs",
-            blogs: blogs
+            blogs: blogs,
+            action: req.query.action
         });
     } catch (err) {
         console.log(err);

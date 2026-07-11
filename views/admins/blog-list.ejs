@@ -10,6 +10,21 @@
     <div class="container mt3">
         <div class="row">
             <div class="col-md-12 mt-3">
+                <% if (action != "undefined" && action == "delete") { %>
+                 <div class="alert alert-success">
+                    Blog silindi.
+                 </div>
+                <% } %>
+                <% if (action != "undefined" && action == "create") { %>
+                 <div class="alert alert-success">
+                    Blog oluşturuldu.
+                 </div>
+                <% } %>
+                <% if (action != "undefined" && action == "edit") { %>
+                 <div class="alert alert-success">
+                    Blog düzenlendi.
+                 </div>
+                <% } %>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
@@ -29,7 +44,7 @@
                                 <td><%= blog.baslik %></td>
                                 <td>
                                     <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.blogid %>">Edit</a>
-                                    <a class="btn btn-sm btn-danger" href="/admin/blogs/<%= blog.blogid %>">Delete</a>
+                                    <a class="btn btn-sm btn-danger" href="/admin/blog/delete/<%= blog.blogid %>">Delete</a>
                                 </td>
                             </tr>
                         <% }) %>
