@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const router = express.Router();
 const db = require("../data/db");
+const imageUpload = require("../helpers/image-upload");
+const fs = require("fs");
 
 router.get("/categories/delete/:categoryid", async (req, res) => {
     const delcategoryid = req.params.categoryid;
@@ -136,10 +138,10 @@ router.get("/blogs/create", async (req, res) => {
     }
 });
 
-router.post("/blogs/create", async (req, res) => {
+router.post("/blogs/create", imageUpload.upload.single("resim"), async (req, res) => {
     const baslik = req.body.baslik;
     const aciklama = req.body.aciklama;
-    const resim = req.body.resim;
+    const resim = req.file.filename;
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategori = req.body.kategori;
@@ -176,14 +178,23 @@ router.get("/blogs/:blogid", async (req, res) => {
     }
 });
 
-router.post("/blogs/:blogid", async (req, res) => {
+router.post("/blogs/:blogid", imageUpload.upload.single("resim"), async (req, res) => {
     const blogid = req.body.blogid;
     const baslik = req.body.baslik;
     const aciklama = req.body.aciklama;
-    const resim = req.body.resim;
+
+    const resim = req.file ? req.file.filename : req.body.eskiResim;
+    
+    if(req.file) {
+        fs.unlink("./public/images/" + req.body.eskiResim, err => {
+            console.log(err);
+        });
+    } 
+
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategori = req.body.kategori;
+
 
     try {
         await db.execute("UPDATE blog SET baslik=?, aciklama=?, resim=?, anasayfa=?, onay=?, categoryid=? WHERE blogid=?",
