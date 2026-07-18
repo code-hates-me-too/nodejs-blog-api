@@ -20,9 +20,15 @@
                         </div>
                     </div>
                     <div class="row mb-3">
+                        <label for="altbaslik" class="col-sm-2 col-form-label">Alt Başlık</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="altbaslik" name="altbaslik" value="<%= blog.altbaslik %>">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
                         <label for="aciklama" class="col-sm-2 col-form-label">Açıklama</label>
                         <div class="col-sm-8">
-                            <textarea class="form-control" name="aciklama"><%= blog.aciklama %></textarea>
+                            <textarea id="editor" class="form-control" name="aciklama"><%- blog.aciklama %></textarea>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -77,6 +83,6 @@
             </div>
         </div>
     </div>
-
+    <%- include('../partials/ckeditor') %>
 </body>
 </html>

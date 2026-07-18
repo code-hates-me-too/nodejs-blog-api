@@ -9,11 +9,17 @@
 
     <div class="container mt-3">
         <div class="row">
-            <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+            <div class="col-5">
+                <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+            </div>
+            <div class="col-7">
+                <h3><%= blog.baslik %></h3>
+                <p><%= blog.altbaslik %></p>
+            </div>
         </div>
+        <hr>
         <div class="row">
-            <h3><%= blog.baslik %></h3>
-            <p><%= blog.aciklama %></p>
+            <p><%- blog.aciklama %></p>
         </div>
     </div>
 

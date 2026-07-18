@@ -140,6 +140,7 @@ router.get("/blogs/create", async (req, res) => {
 
 router.post("/blogs/create", imageUpload.upload.single("resim"), async (req, res) => {
     const baslik = req.body.baslik;
+    const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
     const resim = req.file.filename;
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
@@ -147,8 +148,8 @@ router.post("/blogs/create", imageUpload.upload.single("resim"), async (req, res
     const kategori = req.body.kategori;
 
     try {
-        await db.execute(`INSERT INTO blog(baslik, aciklama, resim, anasayfa, onay, categoryid)
-        VALUES (?,?,?,?,?,?)`, [baslik, aciklama, resim, anasayfa, onay, kategori]);
+        await db.execute(`INSERT INTO blog(baslik, altbaslik, aciklama, resim, anasayfa, onay, categoryid)
+        VALUES (?,?,?,?,?,?,?)`, [baslik, altbaslik, aciklama, resim, anasayfa, onay, kategori]);
         res.redirect("/admin/blogs?action=create");
     } catch (err) {
         console.log(err);
@@ -181,13 +182,16 @@ router.get("/blogs/:blogid", async (req, res) => {
 router.post("/blogs/:blogid", imageUpload.upload.single("resim"), async (req, res) => {
     const blogid = req.body.blogid;
     const baslik = req.body.baslik;
+    const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
 
     const resim = req.file ? req.file.filename : req.body.eskiResim;
     
     if(req.file) {
         fs.unlink("./public/images/" + req.body.eskiResim, err => {
-            console.log(err);
+            if (err) {
+                console.log(err);
+            }
         });
     } 
 
@@ -197,8 +201,8 @@ router.post("/blogs/:blogid", imageUpload.upload.single("resim"), async (req, re
 
 
     try {
-        await db.execute("UPDATE blog SET baslik=?, aciklama=?, resim=?, anasayfa=?, onay=?, categoryid=? WHERE blogid=?",
-        [baslik, aciklama, resim, anasayfa, onay, kategori, blogid]);
+        await db.execute("UPDATE blog SET baslik=?, altbaslik=?, aciklama=?, resim=?, anasayfa=?, onay=?, categoryid=? WHERE blogid=?",
+        [baslik, altbaslik, aciklama, resim, anasayfa, onay, kategori, blogid]);
         res.redirect("/admin/blogs?action=edit");
     } catch (err) {
         console.log(err);
