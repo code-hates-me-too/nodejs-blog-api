@@ -1,23 +1,26 @@
 const express = require("express");
 const path = require("path");
 const router = express.Router();
-const db = require("../data/db");
+const Blog = require("../models/blog");
+const Category = require("../models/category");
+const { Op } = require("sequelize");
 
 router.get("/blogs/category/:categoryid", async (req, res) => {
-    const categoryid = req.params.categoryid;
+    const categoryid = Number(req.params.categoryid);
     try {
-        const [blogs] = await db.execute(
-            "SELECT * FROM blog WHERE categoryid=?", 
-            [categoryid]
-        );
+        const blogs = await Blog.findAll({
+            where: {
+                categoryid: categoryid,
+                onay: true
+            }
+        });
 
-        const [categories] = await db.execute(
-            "SELECT * FROM category"
-        );
+        const categories = await Category.findAll();
 
-        const  [title] = await db.execute("SELECT categoryname FROM category WHERE categoryid=?", [categoryid]); 
+        const title = await Category.findByPk(categoryid);
+
         res.render("users/blogs", {
-            title: title[0].categoryname,
+            title: title.categoryname,
             blogs,
             categories,
             selectedCategory: categoryid
@@ -27,19 +30,20 @@ router.get("/blogs/category/:categoryid", async (req, res) => {
     }
 });
 
-
 router.get("/blogs/:blogid", async (req, res) => {
     const blogid = req.params.blogid;
     
     try {
-        const [blog, ] = await db.execute("SELECT * FROM blog WHERE blogid=?", [blogid]);
-        if(blog[0]) {
-            return res.render("users/blog-details", {
-                title: blog[0].baslik,
-                blog: blog[0],
-                selectedCategory: null
-            });
-        } 
+        const blog = await Blog.findByPk(blogid);
+        //BURAYI KONTROL ET
+        if(blog) {
+            if(blog.onay == true) {
+                return res.render("users/blog-details", {
+                    title: blog.baslik,
+                    blog: blog,
+                });
+            } 
+        }
         res.redirect("/blogs");
     } catch (err) {
         console.log(err);
@@ -48,13 +52,15 @@ router.get("/blogs/:blogid", async (req, res) => {
 
 router.get("/blogs", async (req, res) => {
     try {
-        const [blogs] = await db.execute(
-            "SELECT * FROM blog WHERE onay=1"
-        );
+        const blogs = await Blog.findAll({
+            where: {
+                onay: {
+                    [Op.eq]: true
+                }
+            }
+        });
 
-        const [categories] = await db.execute(
-            "SELECT * FROM category"
-        );
+        const categories = await Category.findAll();
 
         res.render("users/blogs", {
             title: "Tüm Bloglar",
@@ -69,13 +75,16 @@ router.get("/blogs", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try{
-        const [blogs] = await db.execute(
-            "SELECT * FROM blog WHERE onay=1 AND anasayfa=1"
-        );
+        const blogs = await Blog.findAll({
+            where: {
+                [Op.and]: [
+                    { anasayfa: true }, 
+                    { onay: true }, 
+                ]
+            }
+        });
 
-        const [categories] = await db.execute(
-            "SELECT * FROM category"
-        );
+        const categories = await Category.findAll();
 
         res.render("users/index", {
             title: "Anasayfa",
