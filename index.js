@@ -13,6 +13,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
+// veritabanı ilişkiler
+const sequelize = require("./data/db");
+const Blog = require("./models/blog");
+const Category = require("./models/category");
+Category.hasMany(Blog, {
+    foreignKey: {
+        name: "categoryid",
+        allowNull: false,
+    }
+});
+Blog.belongsTo(Category);
+(async () => {
+    await sequelize.sync({ alter: true });
+})();
+
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
 

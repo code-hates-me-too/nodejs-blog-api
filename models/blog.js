@@ -32,18 +32,6 @@ const Blog = sequelize.define("blog", {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    categoryid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: -1
-    },
 });
-
-const blogDB = async () => {
-    await Blog.sync({ alter: true });
-    console.log("blog tablosu eklendi")
-};
-
-blogDB();
 
 module.exports = Blog;

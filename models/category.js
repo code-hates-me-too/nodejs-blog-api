@@ -17,11 +17,4 @@ const Category = sequelize.define("category", {
 }
 );
 
-const categoryDB = async () => {
-    await Category.sync({ alter: true });
-    console.log("kategori tablosu eklendi")
-};
-
-categoryDB();
-
 module.exports = Category;
