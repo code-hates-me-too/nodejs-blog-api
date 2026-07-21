@@ -20,10 +20,16 @@ const Category = require("./models/category");
 Category.hasMany(Blog, {
     foreignKey: {
         name: "categoryid",
-        allowNull: false,
+        allowNull: true,
+    },
+    onDelete: "SET NULL",
+    onUpdate: "SET NULL"
+});
+Blog.belongsTo(Category, {
+    foreignKey: {
+        name: "categoryid"
     }
 });
-Blog.belongsTo(Category);
 (async () => {
     await sequelize.sync({ alter: true });
 })();

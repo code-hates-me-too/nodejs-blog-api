@@ -56,11 +56,15 @@ exports.categories_edit_get = async (req, res) => {
 
     try {
         const category = await Category.findByPk(pickedcategoryid);
+        const blogs = await category.getBlogs();
+        const blogCount = await category.countBlogs();
         
         if(category) {
             return res.render("admins/category-edit", {
                 title: " Kategori Edit",
-                category: category
+                category: category,
+                blogs: blogs,
+                blogCount: blogCount
             });
         }
 
@@ -237,7 +241,12 @@ exports.blog_edit_post = async (req, res) => {
 
 exports.blogs_get = async (req, res) => {
     try {
-        const blogs = await Blog.findAll();
+        const blogs = await Blog.findAll({
+            include: {
+                model: Category,
+                attributes: ["categoryname"]
+            }
+        });
 
         res.render("admins/blog-list", {
             title: "Edit Blogs",
