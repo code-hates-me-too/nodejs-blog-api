@@ -32,7 +32,7 @@
                             <th style="width: 75px;">id</th>
                             <th style="width: 150px;">resim</th>
                             <th>baslik</th>
-                            <th style="width: 150px;">işlemler</th>
+                            <th style="width: 200px;">işlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,7 +49,12 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.blogid %>">Edit</a>
-                                    <a class="btn btn-sm btn-danger" href="/admin/blog/delete/<%= blog.blogid %>">Delete</a>
+
+                                    <form style="display: inline-block;" action="/admin/categories/remove" method="post">
+                                        <input type="hidden" name="blogid" value="<%= blog.blogid %>">
+                                        <input type="hidden" name="categoryid" value="<%= category.categoryid %>">
+                                        <button type="submit" class="btn btn-sm btn-danger">Kategoriden Çıkar</button>
+                                    </form>
                                 </td>
                             </tr>
                         <% }) %>

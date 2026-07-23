@@ -8,6 +8,8 @@ router.get("/categories/delete/:categoryid", adminController.categories_delete_g
 
 router.post("/categories/delete/:categoryid", adminController.categories_delete_post); 
 
+router.post("/categories/remove", adminController.get_categories_remove);
+
 router.get("/categories/create", adminController.categories_create_get); 
 
 router.post("/categories/create", adminController.categories_create_post); 

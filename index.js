@@ -17,18 +17,19 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 const sequelize = require("./data/db");
 const Blog = require("./models/blog");
 const Category = require("./models/category");
-Category.hasMany(Blog, {
-    foreignKey: {
-        name: "categoryid",
-        allowNull: true,
-    },
-    onDelete: "SET NULL",
-    onUpdate: "SET NULL"
+const BlogCategory = sequelize.define("BlogCategory", {}, {
+    timestamps: false,
+    freezeTableName: true
 });
-Blog.belongsTo(Category, {
-    foreignKey: {
-        name: "categoryid"
-    }
+Blog.belongsToMany(Category, {
+    through: BlogCategory,
+    foreignKey: "blogid",
+    otherKey: "categoryid"
+});
+Category.belongsToMany(Blog, {
+    through: BlogCategory,
+    foreignKey: "categoryid",
+    otherKey: "blogid"
 });
 (async () => {
     await sequelize.sync({ alter: true });

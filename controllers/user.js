@@ -7,8 +7,11 @@ exports.blogs_by_category = async (req, res) => {
     try {
         const blogs = await Blog.findAll({
             where: {
-                categoryid: categoryid,
                 onay: true
+            },
+            include: {
+                model: Category,
+                where: { categoryid: categoryid }
             }
         });
 

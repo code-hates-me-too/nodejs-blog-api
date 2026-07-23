@@ -32,6 +32,8 @@ const Blog = sequelize.define("blog", {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
+}, {
+    freezeTableName: true
 });
 
 module.exports = Blog;

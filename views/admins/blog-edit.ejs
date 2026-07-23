@@ -8,54 +8,49 @@
     <%- include('../partials/nav') %>
 
     <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-12">
-                <form method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="blogid" value="<%= blog.blogid %>">
-                    <input type="hidden" name="eskiResim" value="<%= blog.resim %>">
-                    <div class="row mb-3">
-                        <label for="baslik" class="col-sm-2 col-form-label">Başlık</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="baslik" name="baslik" value="<%= blog.baslik %>">
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-10">
+                    
+                        <input type="hidden" name="blogid" value="<%= blog.blogid %>">
+                        <input type="hidden" name="eskiResim" value="<%= blog.resim %>">
+                        <div class="row mb-3">
+                            <label for="baslik" class="col-sm-1 col-form-label">Başlık</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control" id="baslik" name="baslik" value="<%= blog.baslik %>">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="altbaslik" class="col-sm-2 col-form-label">Alt Başlık</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="altbaslik" name="altbaslik" value="<%= blog.altbaslik %>">
+                        <div class="row mb-3">
+                            <label for="altbaslik" class="col-sm-1 col-form-label">Alt Başlık</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control" id="altbaslik" name="altbaslik" value="<%= blog.altbaslik %>">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="aciklama" class="col-sm-2 col-form-label">Açıklama</label>
-                        <div class="col-sm-8">
-                            <textarea id="editor" class="form-control" name="aciklama"><%- blog.aciklama %></textarea>
+                        <div class="row mb-3">
+                            <label for="aciklama" class="col-sm-1 col-form-label">Açıklama</label>
+                            <div class="col-sm-11">
+                                <textarea id="editor" class="form-control" name="aciklama"><%- blog.aciklama %></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="resim" class="col-sm-2 col-form-label">Resim</label>
-                        <div class="col-sm-8">
-                            <img src="/static/images/<%= blog.resim %>" class="img-fluid" style="max-width:250px;" alt="">
-                            <p></p>
-                            <input type="file" class="form-control" id="resim" name="resim" value="<%= blog.resim %>">
+                        <div class="row mb-3">
+                            <label for="resim" class="col-sm-1 col-form-label">Resim</label>
+                            <div class="col-sm-11">
+                                <img src="/static/images/<%= blog.resim %>" class="img-fluid" style="max-width:250px;" alt="">
+                                <p></p>
+                                <input type="file" class="form-control" id="resim" name="resim" value="<%= blog.resim %>">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="baslik" class="col-sm-2 col-form-label">Kategori</label>
-                        <div class="col-sm-8">
-                            <select id="kategori" class="form-select" name="kategori">
-                                <option value="-1" selected>Seçiniz</option>
-                                <% categories.forEach(category => { %>
-                                    <% if (blog.categoryid == category.categoryid) { %>
-                                        <option value="<%= category.categoryid %>" selected><%= category.categoryname %></option>
-                                    <% } else { %>
-                                        <option value="<%= category.categoryid %>"><%= category.categoryname %></option>
-                                    <% } %>
-                                <% }) %>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-sm-11 offset-sm-1">
+                                <button type="submit" class="btn btn-primary">Kaydet</button>
+                            </div>
                         </div>
-                    </div>
+                    
+                </div>
+                <div class="col-md-2">
+                    <p>Seçenekler</p><hr>
                     <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
+                        <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="anasayfa" name="anasayfa" <%= blog.anasayfa ? "checked":"" %>>
                                 <label class="form-check-label" for="anasayfa">
@@ -64,8 +59,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
+                    <div class="row">
+                        <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="onay" name="onay" <%= blog.onay ? "checked":"" %>>
                                 <label class="form-check-label" for="onay">
@@ -74,14 +69,29 @@
                             </div>
                         </div>
                     </div>
+                    <br><br><p>Kategoriler</p><hr>
                     <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
-                            <button type="submit" class="btn btn-primary">Kaydet</button>
-                        </div>
+                        <% categories.forEach(category => { %>
+                            <div class="col-sm-11 offset-sm-1">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="cat<%= category.categoryid %>"
+                                        name="categories[]"
+                                        value="<%= category.categoryid %>"
+                                        <%= blog.categories.some(cat => cat.categoryid == category.categoryid) ? "checked" : "" %>
+                                    >
+                                    <label class="form-check-label" for="cat<%= category.categoryid %>">
+                                        <%= category.categoryname %>
+                                    </label>
+                                </div>
+                            </div>
+                        <% }) %>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
     <%- include('../partials/ckeditor') %>
 </body>

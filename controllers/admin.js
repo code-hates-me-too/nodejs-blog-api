@@ -1,6 +1,16 @@
 const fs = require("fs");
 const Blog = require("../models/blog");
 const Category = require("../models/category");
+const { Op } = require("sequelize");
+const sequelize = require("../data/db");
+
+exports.get_categories_remove = async (req, res) => {
+    const blogid = req.body.blogid;
+    const categoryid = req.body.categoryid;
+
+    await sequelize.query(`delete from BlogCategory where blogid=${blogid} and categoryid=${categoryid}`);
+    res.redirect("/admin/categories/"+ categoryid);
+};
 
 exports.categories_delete_get = async (req, res) => {
     const delcategoryid = req.params.categoryid;
@@ -180,7 +190,15 @@ exports.blog_edit_get = async (req, res) => {
     const pickedblogid = req.params.blogid;
 
     try {
-        const blog = await Blog.findByPk(pickedblogid);
+        const blog = await Blog.findOne({
+            where: {
+                blogid: pickedblogid
+            },
+            include: {
+                model: Category,
+                attributes: ["categoryid"]
+            }
+        });
         const categories = await Category.findAll();
         
         if(blog) {
@@ -216,11 +234,19 @@ exports.blog_edit_post = async (req, res) => {
 
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
-    const kategori = req.body.kategori;
+    const kategoriIDler = req.body.categories;
 
 
     try {
-        const blog = await Blog.findByPk(blogid);
+        const blog = await Blog.findOne({
+            where: {
+                blogid: blogid
+            }, 
+            include: {
+                model: Category,
+                attributes: ["categoryid"]
+            }
+        });
         if(blog) {
             blog.baslik = baslik;
             blog.altbaslik = altbaslik;
@@ -228,7 +254,21 @@ exports.blog_edit_post = async (req, res) => {
             blog.resim = resim;
             blog.anasayfa = anasayfa;
             blog.onay = onay;
-            blog.categoryid = kategori;
+
+            if(kategoriIDler == undefined) {
+                await blog.removeCategories(blog.categories);
+            } else {
+                await blog.removeCategories(blog.categories);
+                const selectedCategories = await Category.findAll({
+                    where: {
+                        categoryid: {
+                            [Op.in]: kategoriIDler
+                        }
+                    }
+                });
+                await blog.addCategories(selectedCategories);
+            }
+
             await blog.save();
             return res.redirect("/admin/blogs?action=edit");
         }
