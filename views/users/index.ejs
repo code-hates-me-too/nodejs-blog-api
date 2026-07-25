@@ -19,9 +19,16 @@
             <div class="col-md-9">
                 <h1 class="h3 mb-3">Anasayfa</h1>
 
+                    <%- include('../partials/pagination') %>
+
+                    <% if (blogs.length == 0) { %>
+                        <%- include('../partials/no-products') %>
+                    <% } %>
                     <% blogs.forEach(blog => { %>
                             <%- include('../partials/blog-card', { blog }) %>
                     <% }) %>
+
+                    <%- include('../partials/pagination') %>
 
             </div>
         </div>

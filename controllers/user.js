@@ -2,38 +2,6 @@ const Blog = require("../models/blog");
 const Category = require("../models/category");
 const { Op, where } = require("sequelize");
 
-exports.blogs_by_category = async (req, res) => {
-    const slug = req.params.slug;
-    try {
-        const blogs = await Blog.findAll({
-            where: {
-                onay: true
-            },
-            include: {
-                model: Category,
-                where: { url: slug }
-            }
-        });
-
-        const categories = await Category.findAll();
-
-        const title = await Category.findOne({
-            where: {
-                url: slug  
-            }
-        });
-
-        res.render("users/blogs", {
-            title: title.categoryname,
-            blogs,
-            categories,
-            selectedCategory: slug
-        });
-    } catch (err) {
-        console.log(err);
-    }
-};
-
 exports.blog_details = async (req, res) => {
     const slug = req.params.slug;
     
@@ -59,21 +27,30 @@ exports.blog_details = async (req, res) => {
 };
 
 exports.blogs = async (req, res) => {
+    const size = 3;
+    const { page = 0 } = req.query;
+    const slug = req.params.slug;
     try {
-        const blogs = await Blog.findAll({
+        const { rows, count } = await Blog.findAndCountAll({
             where: {
                 onay: {
                     [Op.eq]: true
                 }
-            }
+            },
+            include: slug ? { model: Category, where: { url: slug }} : null,
+            limit: size,
+            offset: page * size
         });
 
         const categories = await Category.findAll();
 
         res.render("users/blogs", {
             title: "Tüm Bloglar",
-            blogs,
+            blogs: rows,
             categories,
+            totalItems: count,
+            totalPages: Math.ceil(count / size),
+            currentPage: page,
             selectedCategory: null
         });
     } catch (err) {
@@ -82,22 +59,29 @@ exports.blogs = async (req, res) => {
 };
 
 exports.mainpage = async (req, res) => {
+    const size = 6;
+    const { page = 0 } = req.query;
     try{
-        const blogs = await Blog.findAll({
+        const { rows, count} = await Blog.findAndCountAll({
             where: {
                 [Op.and]: [
                     { anasayfa: true }, 
                     { onay: true }, 
                 ]
-            }
+            },
+            limit: size,
+            offset: page * size
         });
 
         const categories = await Category.findAll();
 
         res.render("users/index", {
             title: "Anasayfa",
-            blogs,
+            blogs: rows,
             categories,
+            totalItems: count,
+            totalPages: Math.ceil(count / size),
+            currentPage: page,
             selectedCategory: null
         });
 

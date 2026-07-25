@@ -1,19 +1,47 @@
+<% if (totalPages > 1) { %>
 <nav>
     <ul class="pagination justify-content-center">
-        <li class="page-item">
-            <a href="" class="page-link">Geri</a>
+
+        <li class="page-item <%= Number(currentPage) == 0 ? 'disabled' : '' %>">
+            <% if(Number(currentPage) == 0) { %>
+                <span class="page-link">İlk</span>
+            <% } else { %>
+                <a href="?page=0" class="page-link">İlk</a>
+            <% } %>
         </li>
-        <li class="page-item active">
-            <a href="" class="page-link">1</a>
+
+        <li class="page-item <%= Number(currentPage) == 0 ? 'disabled' : '' %>">
+            <% if(Number(currentPage) == 0) { %>
+                <span class="page-link">Geri</span>
+            <% } else { %>
+                <a href="?page=<%= Number(currentPage) - 1 %>" class="page-link">Geri</a>
+            <% } %>
         </li>
-        <li class="page-item">
-            <a href="" class="page-link">2</a>
+
+        <% for(let i = 0; i < totalPages; i++) { %>
+            <li class="page-item <%= i == Number(currentPage) ? 'active' : '' %>">
+                <a href="?page=<%= i %>" class="page-link">
+                    <%= i + 1 %>
+                </a>
+            </li>
+        <% } %>
+
+        <li class="page-item <%= Number(currentPage) == totalPages - 1 ? 'disabled' : '' %>">
+            <% if(Number(currentPage) == totalPages - 1) { %>
+                <span class="page-link">İleri</span>
+            <% } else { %>
+                <a href="?page=<%= Number(currentPage) + 1 %>" class="page-link">İleri</a>
+            <% } %>
         </li>
-        <li class="page-item">
-            <a href="" class="page-link">3</a>
+
+        <li class="page-item <%= Number(currentPage) == totalPages - 1 ? 'disabled' : '' %>">
+            <% if(Number(currentPage) == totalPages - 1) { %>
+                <span class="page-link">Son</span>
+            <% } else { %>
+                <a href="?page=<%= totalPages - 1 %>" class="page-link">Son</a>
+            <% } %>
         </li>
-        <li class="page-item">
-            <a href="" class="page-link">İleri</a>
-        </li>
+
     </ul>
 </nav>
+<% } %>

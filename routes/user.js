@@ -3,7 +3,7 @@ const path = require("path");
 const router = express.Router();
 const userController = require("../controllers/user");
 
-router.get("/blogs/category/:slug", userController.blogs_by_category);
+router.get("/blogs/category/:slug", userController.blogs);
 
 router.get("/blogs/:slug", userController.blog_details);
 
