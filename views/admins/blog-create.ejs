@@ -8,51 +8,49 @@
     <%- include('../partials/nav') %>
 
     <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-12">
-                <form method="post" enctype="multipart/form-data">
-                    <div class="row mb-3">
-                        <label for="baslik" class="col-sm-2 col-form-label">Başlık</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="baslik" name="baslik">
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-md-10">
+                        <div class="row mb-3">
+                            <label for="baslik" class="col-sm-1 col-form-label">Başlık</label>
+                            <div class="col-sm-11">
+                                <input type="text" class="form-control" id="baslik" name="baslik">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="altbaslik" class="col-sm-2 col-form-label">Alt Başlık</label>
-                        <div class="col-sm-8">
-                            <textarea
-                                class="form-control"
-                                id="altbaslik"
-                                name="altbaslik"
-                                rows="2"></textarea>
+                        <div class="row mb-3">
+                            <label for="altbaslik" class="col-sm-1 col-form-label">Alt Başlık</label>
+                            <div class="col-sm-11">
+                                <textarea
+                                    class="form-control"
+                                    id="altbaslik"
+                                    name="altbaslik"
+                                    rows="2"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="aciklama" class="col-sm-2 col-form-label">Açıklama</label>
-                        <div class="col-sm-8">
-                            <textarea class="form-control" name="aciklama" 
-                            id="editor" rows="10"></textarea>
+                        <div class="row mb-3">
+                            <label for="aciklama" class="col-sm-1 col-form-label">Açıklama</label>
+                            <div class="col-sm-11">
+                                <textarea class="form-control" name="aciklama" 
+                                id="editor" rows="10"></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="resim" class="col-sm-2 col-form-label">Resim</label>
-                        <div class="col-sm-8">
-                            <input type="file" class="form-control" id="resim" name="resim">
+                        <div class="row mb-3">
+                            <label for="resim" class="col-sm-1 col-form-label">Resim</label>
+                            <div class="col-sm-11">
+                                <input type="file" class="form-control" id="resim" name="resim">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="baslik" class="col-sm-2 col-form-label">Kategori</label>
-                        <div class="col-sm-8">
-                            <select id="kategori" class="form-select" name="kategori">
-                                <option value="-1" selected>Seçiniz</option>
-                                <% categories.forEach(category => { %>
-                                    <option value="<%= category.categoryid %>"><%= category.categoryname %></option>
-                                <% }) %>
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-sm-10 offset-sm-1">
+                                <button type="submit" class="btn btn-primary">Kaydet</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
+                    
+                </div>
+                <div class="col-md-2">
+                    <p>Seçenekler</p><hr>
+                    <div class="row mb-1">
+                        <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="anasayfa" name="anasayfa">
                                 <label class="form-check-label" for="anasayfa">
@@ -62,7 +60,7 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
+                        <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="onay" name="onay">
                                 <label class="form-check-label" for="onay">
@@ -71,13 +69,29 @@
                             </div>
                         </div>
                     </div>
+                    <br><br><p>Kategoriler</p><hr>
                     <div class="row mb-3">
-                        <div class="col-sm-10 offset-sm-2">
-                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <div class="row mb-3">
+                            <% categories.forEach(category => { %>
+                                <div class="col-sm-11 offset-sm-1">
+                                    <div class="form-check">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="cat<%= category.categoryid %>"
+                                            name="categories[]"
+                                            value="<%= category.categoryid %>"
+                                        >
+                                        <label class="form-check-label" for="cat<%= category.categoryid %>">
+                                            <%= category.categoryname %>
+                                        </label>
+                                    </div>
+                                </div>
+                            <% }) %>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
     <%- include('../partials/ckeditor') %>

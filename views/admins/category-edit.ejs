@@ -48,11 +48,12 @@
                                     <%= blog.altbaslik %>
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.blogid %>">Edit</a>
+                                    <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.url %>">Edit</a>
 
                                     <form style="display: inline-block;" action="/admin/categories/remove" method="post">
                                         <input type="hidden" name="blogid" value="<%= blog.blogid %>">
                                         <input type="hidden" name="categoryid" value="<%= category.categoryid %>">
+                                        <input type="hidden" name="categoryurl" value="<%= category.url %>">
                                         <button type="submit" class="btn btn-sm btn-danger">Kategoriden Çıkar</button>
                                     </form>
                                 </td>

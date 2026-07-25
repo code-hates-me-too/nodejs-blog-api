@@ -10,4 +10,5 @@
 - [ ] Sadece resim uzantılarına izin ver
 - [ ] Maksimum dosya, başlık, açıklama, metin boyutu belirle
 - [ ] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
+- [ ] Slug çakışmalarını kontrol et
 - [ ] 

@@ -1,9 +1,9 @@
 const Blog = require("../models/blog");
 const Category = require("../models/category");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 exports.blogs_by_category = async (req, res) => {
-    const categoryid = Number(req.params.categoryid);
+    const slug = req.params.slug;
     try {
         const blogs = await Blog.findAll({
             where: {
@@ -11,19 +11,23 @@ exports.blogs_by_category = async (req, res) => {
             },
             include: {
                 model: Category,
-                where: { categoryid: categoryid }
+                where: { url: slug }
             }
         });
 
         const categories = await Category.findAll();
 
-        const title = await Category.findByPk(categoryid);
+        const title = await Category.findOne({
+            where: {
+                url: slug  
+            }
+        });
 
         res.render("users/blogs", {
             title: title.categoryname,
             blogs,
             categories,
-            selectedCategory: categoryid
+            selectedCategory: slug
         });
     } catch (err) {
         console.log(err);
@@ -31,11 +35,15 @@ exports.blogs_by_category = async (req, res) => {
 };
 
 exports.blog_details = async (req, res) => {
-    const blogid = req.params.blogid;
+    const slug = req.params.slug;
     
     try {
-        const blog = await Blog.findByPk(blogid);
-        //BURAYI KONTROL ET
+        const blog = await Blog.findOne({
+            where: {
+                url: slug
+            }
+        });
+
         if(blog) {
             if(blog.onay == true) {
                 return res.render("users/blog-details", {
