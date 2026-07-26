@@ -11,4 +11,7 @@
 - [ ] Maksimum dosya, başlık, açıklama, metin boyutu belirle
 - [ ] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
 - [ ] Slug çakışmalarını kontrol et
+- [ ] Resim olmadan blog oluşturulabilsin
+- [ ] Kategori olmadan blog oluşturulabilsin
+- [ ] Admin blog paneline pagination ekle 
 - [ ] 

@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const userRoutes = require("./routes/user");
 const adminRoutes = require("./routes/admin");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -17,6 +18,10 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 const sequelize = require("./data/db");
 const Blog = require("./models/blog");
 const Category = require("./models/category");
+const User = require("./models/user");
+const dummyData = require("./data/dummy-data");
+const { populate } = require("dotenv");
+
 const BlogCategory = sequelize.define("BlogCategory", {}, {
     timestamps: false,
     freezeTableName: true
@@ -31,11 +36,25 @@ Category.belongsToMany(Blog, {
     foreignKey: "categoryid",
     otherKey: "blogid"
 });
+
+Blog.belongsTo(User, {
+    foreignKey: {
+        name: "userid",
+        allowNull: true
+    }
+});
+User.hasMany(Blog, {
+    foreignKey: "userid"
+});
+
 (async () => {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: true });
+
+    await dummyData();
 })();
 
 app.use("/admin", adminRoutes);
+app.use("/account", authRoutes);
 app.use(userRoutes);
 
 app.listen(3000, () => {
