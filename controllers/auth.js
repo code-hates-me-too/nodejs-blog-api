@@ -69,8 +69,20 @@ exports.login_post = async (req, res) => {
             });
         }
         
+        req.session.isAuth = true;
+        req.session.fullname = user.fullname;
+
         return res.redirect("/");
         
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.logout_get = async (req, res) => {
+    try {
+        await req.session.destroy();
+        return res.redirect("/account/login");
     } catch (err) {
         console.log(err);
     }

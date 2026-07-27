@@ -82,7 +82,8 @@ exports.mainpage = async (req, res) => {
             totalItems: count,
             totalPages: Math.ceil(count / size),
             currentPage: page,
-            selectedCategory: null
+            selectedCategory: null,
+            isAuth: req.session.isAuth
         });
 
     } catch (err) {

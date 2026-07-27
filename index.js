@@ -1,26 +1,43 @@
 require("dotenv").config();
 
 const express = require("express");
+const sequelize = require("./data/db");
+const locals = require("./middlewares/locals");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 const path = require("path");
 const userRoutes = require("./routes/user");
 const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+const sessionStore = new SequelizeStore({
+    db: sequelize
+});
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60
+    },
+    store: sessionStore
+}));
+app.use(locals);
 
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 // veritabanı ilişkiler
-const sequelize = require("./data/db");
 const Blog = require("./models/blog");
 const Category = require("./models/category");
 const User = require("./models/user");
 const dummyData = require("./data/dummy-data");
-const { populate } = require("dotenv");
 
 const BlogCategory = sequelize.define("BlogCategory", {}, {
     timestamps: false,
@@ -48,9 +65,11 @@ User.hasMany(Blog, {
 });
 
 (async () => {
-    await sequelize.sync({ force: true });
+    // await sessionStore.sync();
 
-    await dummyData();
+    // await sequelize.sync({ force: true });
+
+    // await dummyData();
 })();
 
 app.use("/admin", adminRoutes);
