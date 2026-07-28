@@ -21,16 +21,34 @@ exports.register_post = async (req, res) => {
     try {
         const user = await User.findOne({ where: { email: email }});
         if(user) {
-            req.session.message = { text: "Girdiğiniz email ile daha önce kayıt olunmuş!", class: "warning"};
-            return res.redirect("login");
+            req.session.message = {
+                text: "Girdiğiniz email ile daha önce kayıt olunmuş!",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) {
+                    console.log(err);
+                }
+                return res.redirect("login");
+            });
         }
         await User.create({
             fullname: name,
             email: email,
             password: hashedPassword
         });
-        req.session.message = { text: "Hesabınıza giriş yapabilirsiniz", class: "success"};
-        return res.redirect("login");
+        req.session.message = {
+            text: "Hesabınıza giriş yapabilirsiniz",
+            class: "success"
+        };
+
+        return req.session.save(err => {
+            if (err) {
+                console.log(err);
+            }
+            return res.redirect("login");
+        });
     } catch (err) {
         console.log(err);
     }
@@ -38,7 +56,7 @@ exports.register_post = async (req, res) => {
 
 exports.login_get = async (req, res) => {
     const message = req.session.message;
-    delete req.session.message;
+    req.session.message = null;
     try {
         return res.render("auth/login", {
             title: "Kullanıcı Giriş",
@@ -80,7 +98,14 @@ exports.login_post = async (req, res) => {
         req.session.fullname = user.fullname;
 
         const url = req.query.returnUrl || "/";
-        return res.redirect(url);
+        return req.session.save(err => {
+            if (err) {
+                console.log(err);
+                return res.redirect("/account/login");
+            }
+
+            return res.redirect(url);
+        });
         
     } catch (err) {
         console.log(err);
@@ -89,8 +114,14 @@ exports.login_post = async (req, res) => {
 
 exports.logout_get = async (req, res) => {
     try {
-        await req.session.destroy();
-        return res.redirect("/account/login");
+        return req.session.destroy(err => {
+            if (err) {
+                console.log(err);
+                return res.redirect("/");
+            }
+
+            return res.redirect("/account/login");
+        });
     } catch (err) {
         console.log(err);
     }
