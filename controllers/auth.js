@@ -19,12 +19,17 @@ exports.register_post = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
+        const user = await User.findOne({ where: { email: email }});
+        if(user) {
+            req.session.message = { text: "Girdiğiniz email ile daha önce kayıt olunmuş!", class: "warning"};
+            return res.redirect("login");
+        }
         await User.create({
             fullname: name,
             email: email,
             password: hashedPassword
         });
-
+        req.session.message = { text: "Hesabınıza giriş yapabilirsiniz", class: "success"};
         return res.redirect("login");
     } catch (err) {
         console.log(err);
@@ -32,10 +37,12 @@ exports.register_post = async (req, res) => {
 };
 
 exports.login_get = async (req, res) => {
+    const message = req.session.message;
+    delete req.session.message;
     try {
         return res.render("auth/login", {
             title: "Kullanıcı Giriş",
-            message: null
+            message: message
         })
     } catch (err) {
         console.log(err);
@@ -56,7 +63,7 @@ exports.login_post = async (req, res) => {
         if (!user) {
             return res.render("auth/login", {
                 title: "Kullanıcı Giriş",
-                message: "Email hatalı"
+                message: { text: "Girdiğiniz email ile daha önce kayıt olunmuş!", class: "danger"}
             });
         }   
 
@@ -65,14 +72,15 @@ exports.login_post = async (req, res) => {
         if (!match) {
             return res.render("auth/login", {
                 title: "Kullanıcı Giriş",
-                message: "Parola hatalı"
+                message: { text: "Parola hatalı", class: "danger"}
             });
         }
         
         req.session.isAuth = true;
         req.session.fullname = user.fullname;
 
-        return res.redirect("/");
+        const url = req.query.returnUrl || "/";
+        return res.redirect(url);
         
     } catch (err) {
         console.log(err);
