@@ -30,6 +30,7 @@
     "express-session": "^1.19.0",
     "multer": "^2.2.0",
     "mysql2": "^3.22.5",
+    "nodemailer": "^9.0.3",
     "sequelize": "^6.37.8",
     "slugify": "^1.6.9"
   },

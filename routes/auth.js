@@ -13,4 +13,8 @@ router.post("/login", authController.login_post);
 
 router.get("/logout", csrf, authController.logout_get);
 
+router.get("/reset-password", csrf, authController.reset_get);
+
+router.post("/reset-password", authController.reset_post);
+
 module.exports = router;

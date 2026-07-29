@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const emailService = require("../helpers/send-mail");
+const config = require("../config");
+const crypto = require("crypto");
 
 exports.register_get = async (req, res) => {
     try {
@@ -33,22 +36,26 @@ exports.register_post = async (req, res) => {
                 return res.redirect("login");
             });
         }
-        await User.create({
+        
+        const newUser = await User.create({
             fullname: name,
             email: email,
             password: hashedPassword
         });
+
+        emailService.sendMail({
+            from: config.email.from,
+            to: newUser.email,
+            subject: "Hesabınız Oluşturuldu",
+            text: "Hesabınız başarıyla oluşturuldu"
+        });
+
         req.session.message = {
             text: "Hesabınıza giriş yapabilirsiniz",
             class: "success"
         };
 
-        return req.session.save(err => {
-            if (err) {
-                console.log(err);
-            }
-            return res.redirect("login");
-        });
+        return req.session.save(err => {if (err) {console.log(err);} return res.redirect("login");});
     } catch (err) {
         console.log(err);
     }
@@ -122,6 +129,58 @@ exports.logout_get = async (req, res) => {
 
             return res.redirect("/account/login");
         });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.reset_get = async (req, res) => {
+    const message = req.session.message;
+    req.session.message = null;
+    try {
+        return res.render("auth/reset-password", {
+            title: "Reset Password",
+            message: message
+        });   
+        
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.reset_post = async (req, res) => {
+    const email = req.body.email;
+    try {
+        var token = crypto.randomBytes(32).toString("hex");
+        const user = await User.findOne({ where: { email: email}});
+
+        if(!user) {
+            req.session.message = {
+                text: "Girilen emaile ait kullanıcı bulunamadı",
+                class: "danger"
+            };
+            return res.redirect("reset-password");
+        }
+
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + (1000*60*60);
+        await user.save();
+
+        emailService.sendMail({
+            from: config.email.from,
+            to: user.email,
+            subject: "Parola Sıfırlama",
+            html: `
+                <p>Parolarınızı güncellemek için aşağıdaki linke tıklayın</p>
+                <p>
+                    <a href="https://localhost:3000/account/reset-password/${token}">Parola Sıfırla</a>
+                </p>
+            `
+        });
+
+        req.session.message = {text: "Parolanızı sıfırlamak için mailinizi kontrol ediniz", class: "success"};
+        return res.redirect("login");
+        
     } catch (err) {
         console.log(err);
     }
