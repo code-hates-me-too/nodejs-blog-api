@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const sequelize = require("./data/db");
 const locals = require("./middlewares/locals");
+const csurf = require("csurf");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const path = require("path");
@@ -29,6 +30,7 @@ app.use(session({
     store: sessionStore
 }));
 app.use(locals);
+app.use(csurf());
 
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
 app.use("/static", express.static(path.join(__dirname, "public")));

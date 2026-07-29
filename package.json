@@ -23,6 +23,7 @@
     "bootstrap": "^5.3.8",
     "connect-session-sequelize": "^8.0.6",
     "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
