@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const emailService = require("../helpers/send-mail");
 const config = require("../config");
 const crypto = require("crypto");
+const { Op } = require("sequelize");
 
 exports.register_get = async (req, res) => {
     try {
@@ -86,18 +87,26 @@ exports.login_post = async (req, res) => {
         });
 
         if (!user) {
-            return res.render("auth/login", {
-                title: "Kullanıcı Giriş",
-                message: { text: "Girdiğiniz email ile daha önce kayıt olunmuş!", class: "danger"}
+            req.session.message = {
+                text: "Girdiğiniz email ile kullanıcı bulunamadı",
+                class: "danger"
+            };
+
+            return req.session.save(() => {
+                res.redirect("/account/login");
             });
         }   
 
         const match = await bcrypt.compare(password, user.password);
 
         if (!match) {
-            return res.render("auth/login", {
-                title: "Kullanıcı Giriş",
-                message: { text: "Parola hatalı", class: "danger"}
+            req.session.message = {
+                text: "Parola hatalı",
+                class: "danger"
+            };
+
+            return req.session.save(() => {
+                res.redirect("/account/login");
             });
         }
         
@@ -173,13 +182,76 @@ exports.reset_post = async (req, res) => {
             html: `
                 <p>Parolarınızı güncellemek için aşağıdaki linke tıklayın</p>
                 <p>
-                    <a href="https://localhost:3000/account/reset-password/${token}">Parola Sıfırla</a>
+                    <a href="http://localhost:3000/account/new-password/${token}">Parola Sıfırla</a>
                 </p>
             `
         });
 
         req.session.message = {text: "Parolanızı sıfırlamak için mailinizi kontrol ediniz", class: "success"};
-        return res.redirect("login");
+        return req.session.save(err => {
+            if (err) {
+                console.log("Session kaydedilirken hata:", err);
+            }
+
+            return res.redirect("login");
+        });
+        
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.newpassword_get = async (req, res) => {
+    const token = req.params.token;
+    try {
+        const user = await User.findOne({
+            where: {
+                resetToken: token,
+                resetTokenExpiration: {
+                    [Op.gt]: Date.now()
+                }
+            }
+        });
+        return res.render("auth/new-password", {
+            title: "New Password",
+            message: null,
+            token: token,
+            userid: user.userid
+        });   
+        
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.newpassword_post = async (req, res) => {
+    const token = req.body.token;
+    const userid = req.body.userid;
+    const newPassword = req.body.password;
+    try {
+        const user = await User.findOne({
+            where: {
+                resetToken: token,
+                resetTokenExpiration: {
+                    [Op.gt]: Date.now()
+                },
+                userid: userid
+            }
+        });
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetToken = null;
+        user.resetTokenExpiration = null;
+        await user.save();
+
+        req.session.message = {text: "Parolanız güncellendi", class: "success"};
+        return req.session.save(err => {
+            if (err) {
+                console.log("Session kaydedilirken hata:", err);
+            }
+
+            return res.redirect("login");
+        });
         
     } catch (err) {
         console.log(err);

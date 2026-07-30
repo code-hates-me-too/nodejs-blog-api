@@ -25,7 +25,7 @@ const User = sequelize.define("user", {
         allowNull: true
     },
     resetTokenExpiration: {
-        type: DataTypes.STRING,
+        type: DataTypes.DATE,
         allowNull: true
     },
 }, {
