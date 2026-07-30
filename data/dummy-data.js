@@ -2,13 +2,39 @@ const Blog = require("../models/blog");
 const Category = require("../models/category");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const Role = require("../models/role");
 
 async function populate() {
 
     const users = await User.bulkCreate([
-        {fullname: "hokoko", email: "info@hokoko.com", password: await bcrypt.hash("12345", 10)},
-        {fullname: "mokoko", email: "info@mokoko.com", password: await bcrypt.hash("12345", 10)},
+        {
+            fullname: "hokoko",
+            email: "info@hokoko.com",
+            password: await bcrypt.hash("12345", 10)
+        },
+        {
+            fullname: "mokoko",
+            email: "info@mokoko.com",
+            password: await bcrypt.hash("12345", 10)
+        },
     ]);
+
+    // Kullanıcıları değişkenlere al
+    const adminUser = users[0];
+    const normalUser = users[1];
+
+    // Roller
+    const adminRole = await Role.create({
+        rolename: "admin"
+    });
+
+    const userRole = await Role.create({
+        rolename: "user"
+    });
+
+    // Rol ilişkileri
+    await adminUser.addRoles([adminRole, userRole]);
+    await normalUser.addRole(userRole);
 
     const count = await Category.count();
 
@@ -141,6 +167,9 @@ async function populate() {
     await blog7.addCategories([yazilim, kariyer]);
     await blog8.addCategories([web, kariyer]);
     await blog9.addCategories([kariyer]);
+
+    await adminUser.addBlogs([blog1, blog2, blog3, blog4]);
+    await normalUser.addBlogs([blog5, blog6, blog7, blog8, blog9]);
 }
 
 module.exports = populate;

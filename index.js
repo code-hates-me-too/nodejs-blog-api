@@ -25,7 +25,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60
+        maxAge: 1000 * 60 * 60
     },
     store: sessionStore
 }));
@@ -39,6 +39,7 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 const Blog = require("./models/blog");
 const Category = require("./models/category");
 const User = require("./models/user");
+const Role = require("./models/role");
 const dummyData = require("./data/dummy-data");
 
 const BlogCategory = sequelize.define("BlogCategory", {}, {
@@ -65,6 +66,21 @@ Blog.belongsTo(User, {
 User.hasMany(Blog, {
     foreignKey: "userid"
 });
+
+const UserRole = sequelize.define("UserRole", {}, {
+    timestamps: false,
+    freezeTableName: true
+});
+Role.belongsToMany(User, {
+    through: UserRole,
+    foreignKey: "roleid",
+    otherKey: "userid"
+});
+User.belongsToMany(Role, {
+    through: UserRole,
+    foreignKey: "userid",
+    otherKey: "roleid"
+});   
 
 (async () => {
     // await sessionStore.sync();

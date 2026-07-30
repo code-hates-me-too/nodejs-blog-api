@@ -36,4 +36,12 @@ router.post("/blogs/:slug", isAuth, imageUpload.upload.single("resim"), adminCon
 
 router.get("/blogs", isAuth, adminController.blogs_get); 
 
+router.get("/roles", isAuth, adminController.roles_get);
+
+router.post("/roles/remove", isAuth, adminController.role_remove_post);
+
+router.get("/roles/:slug", isAuth, csrf, adminController.role_edit_get);
+
+router.post("/roles/:slug", isAuth, adminController.role_edit_post);
+
 module.exports = router;
