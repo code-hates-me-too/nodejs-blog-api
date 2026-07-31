@@ -14,4 +14,6 @@
 - [ ] Resim olmadan blog oluşturulabilsin
 - [ ] Kategori olmadan blog oluşturulabilsin
 - [ ] Admin blog paneline pagination ekle 
+- [ ] Role edit sayfasındaki delete butonunu çalıştır
+- [ ] User edit sayfasındaki delete butonunu çalıştır (pasifleştirmede olabilir)
 - [ ] 

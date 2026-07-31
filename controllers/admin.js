@@ -359,18 +359,18 @@ exports.role_remove_post = async (req, res) => {
 
         await user.removeRole(role);
 
-        return res.redirect("/admin/roles/" + req.body.rolename);
+        return res.redirect("/admin/roles/" + req.body.roleid);
     } catch (err) {
         console.log(err);
     }
 };
 
 exports.role_edit_get = async (req, res) => {
-    const rolename = req.params.slug;
+    const roleid = req.params.roleid;
     try {
         const role = await Role.findOne({
             where: {
-                rolename: rolename
+                roleid: roleid
             }
         });
         const users = await role.getUsers();
@@ -404,6 +404,95 @@ exports.role_edit_post = async (req, res) => {
             }
         );
         return res.redirect("/admin/roles");
+
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.users_get = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ["userid", "fullname", "email"],
+            include: {
+                model: Role,
+                attributes: ["rolename"]
+            }
+        });
+
+        return res.render("admins/users-list", {
+            title: "User List",
+            users: users,
+            message: null,
+            action: null,
+        });
+
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.users_edit_get = async (req, res) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findOne({
+            where: {
+                userid: userid
+            },
+            include: {
+                model: Role,
+                attributes: ["roleid"]
+            }
+        });
+
+        const roles = await Role.findAll();
+
+        return res.render("admins/users-edit", {
+            title: user.fullname + "Edit",
+            user: user,
+            roles: roles,
+            message: null,
+            action: null
+        })
+
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.users_edit_post = async (req, res) => {
+    const userid = req.body.userid;
+    const fullname = req.body.fullname;
+    const email = req.body.email;
+    const roleIds = req.body.roles;
+    try {
+        const user = await User.findOne({
+            where: { userid: userid },
+            include: { model: Role, attributes: ["roleid"] },
+        });
+
+        if(user) {
+            user.fullname = fullname;
+            user.email = email;
+            
+            if(roleIds == undefined) {
+                await user.removeRoles(user.roles);
+            } else {
+                await user.removeRoles(user.roles);
+                const selectedRoles = await Role.findAll({
+                    where: {
+                        roleid: {
+                            [Op.in]: roleIds
+                        }
+                    }
+                });
+                await user.addRoles(selectedRoles);
+            }
+            await user.save();
+            return res.redirect("/admin/users");
+        }
+
+        return res.redirect("/admin/users");
 
     } catch (err) {
         console.log(err);

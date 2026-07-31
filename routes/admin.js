@@ -40,8 +40,14 @@ router.get("/roles", isAuth, adminController.roles_get);
 
 router.post("/roles/remove", isAuth, adminController.role_remove_post);
 
-router.get("/roles/:slug", isAuth, csrf, adminController.role_edit_get);
+router.get("/roles/:roleid", isAuth, csrf, adminController.role_edit_get);
 
-router.post("/roles/:slug", isAuth, adminController.role_edit_post);
+router.post("/roles/:roleid", isAuth, adminController.role_edit_post);
+
+router.get("/users", isAuth, adminController.users_get);
+
+router.get("/users/:userid", isAuth, csrf, adminController.users_edit_get);
+
+router.post("/users/:userid", isAuth, adminController.users_edit_post);
 
 module.exports = router;
