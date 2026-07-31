@@ -3,7 +3,7 @@ const Blog = require("../models/blog");
 const Category = require("../models/category");
 const Role = require("../models/role");
 const User = require("../models/user");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const sequelize = require("../data/db");
 const slugField = require("../helpers/slugfield");
 const { url } = require("inspector");
@@ -138,10 +138,14 @@ exports.categories_get = async (req, res) => {
 
 exports.blog_delete_get = async (req, res) => {
     const slug = req.params.slug;
+    const userid = req.session.userid;
+    const isAdmin = req.session.roles.includes("admin");
+
     try {
         const blog = await Blog.findOne({
-            where: {
-                url: slug
+            where: isAdmin ? { url: slug } : {
+                url: slug,
+                userid: userid
             }
         });
         if(blog) {
@@ -192,6 +196,7 @@ exports.blog_create_post = async (req, res) => {
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
+    const userid = req.session.userid;
 
     try {
         const blog = await Blog.create({
@@ -202,6 +207,7 @@ exports.blog_create_post = async (req, res) => {
             resim: resim,
             anasayfa: anasayfa,
             onay: onay,
+            userid: userid
         });
 
         await blog.setCategories(kategoriIDler);
@@ -214,12 +220,12 @@ exports.blog_create_post = async (req, res) => {
 
 exports.blog_edit_get = async (req, res) => {
     const slug = req.params.slug;
+    const userid = req.session.userid;
+    const isAdmin = req.session.roles.includes("admin");
 
     try {
         const blog = await Blog.findOne({
-            where: {
-                url: slug
-            },
+            where: isAdmin ? { url: slug } : { url: slug, userid: userid },
             include: {
                 model: Category,
                 attributes: ["categoryid"]
@@ -248,6 +254,7 @@ exports.blog_edit_post = async (req, res) => {
     const url = slugField(baslik);
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
+    const userid = req.session.userid;
 
     const resim = req.file ? req.file.filename : req.body.eskiResim;
     
@@ -267,7 +274,8 @@ exports.blog_edit_post = async (req, res) => {
     try {
         const blog = await Blog.findOne({
             where: {
-                blogid: blogid
+                blogid: blogid,
+                userid: userid
             }, 
             include: {
                 model: Category,
@@ -308,12 +316,17 @@ exports.blog_edit_post = async (req, res) => {
 }; 
 
 exports.blogs_get = async (req, res) => {
+    const userid = req.session.userid;
+    const isAdmin = req.session.roles.includes("admin");
+    const isModerator = req.session.roles.includes("moderator");
     try {
+
         const blogs = await Blog.findAll({
             include: {
                 model: Category,
                 attributes: ["categoryname"]
-            }
+            },
+            where: isModerator && !isAdmin ? { userid: userid } : null
         });
 
         res.render("admins/blog-list", {
@@ -344,6 +357,74 @@ exports.roles_get = async (req, res) => {
             title: "Role Listesi",
             roles: roles
         });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.roles_create_post = async (req, res) => {
+    const rolename = req.body.rolename;
+    try {
+        await Role.create({
+            rolename: rolename
+        });
+
+        return res.redirect("/admin/roles");
+
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.roles_delete_get = async (req, res) => {
+    const roleid = req.params.roleid;
+    try {
+        const role = await Role.findOne({
+            where: {
+                roleid: roleid
+            },
+            include: {
+                model: User
+            }
+        });
+
+        return res.render("admins/role-delete", {
+            title: "Delete" + role.rolename,
+            role: role
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+exports.roles_delete_post = async (req, res) => {
+    const roleid = req.body.roleid;
+
+    try {
+        const role = await Role.findByPk(roleid, {
+            include: User
+        });
+
+        if (!role) {
+            return res.status(404).send("Rol bulunamadı.");
+        }
+
+        if (role.users.length > 0) {
+            req.session.message = {
+                text: "Bu role atanmış kullanıcılar olduğu için silinemez.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles");
+            });
+        }
+
+        await role.destroy();
+
+        return res.redirect("/admin/roles");
+
     } catch (err) {
         console.log(err);
     }

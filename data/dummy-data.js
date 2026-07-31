@@ -29,7 +29,7 @@ async function populate() {
     });
 
     const userRole = await Role.create({
-        rolename: "user"
+        rolename: "moderator"
     });
 
     // Rol ilişkileri

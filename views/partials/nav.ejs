@@ -7,17 +7,19 @@
                 <a href="/blogs" class="nav-link">| Blog Listesi</a>
             </li>
 
-            <% if (isAuth) { %>
-
+            <% if ( isAdmin || isModerator ) { %>
             <li class="nav-item">
                 <a href="/admin/blogs" class="nav-link">| Edit Blogs</a>
-            </li>
+            </li>   
+            <li class="nav-item">
+                <a href="/admin/blogs/create" class="nav-link">| Add Blog</a>
+            </li>    
+            <% } %>
+            <% if (isAdmin) { %>
             <li class="nav-item">
                 <a href="/admin/categories" class="nav-link">| Edit Categories</a>
             </li>
-            <li class="nav-item">
-                <a href="/admin/blogs/create" class="nav-link">| Add Blog</a>
-            </li>
+            
             <li class="nav-item">
                 <a href="/admin/categories/create" class="nav-link">| Add Category</a>
             </li>
@@ -27,8 +29,8 @@
             <li class="nav-item">
                 <a href="/admin/users" class="nav-link">| Users</a>
             </li>
-
             <% } %>
+            
         </ul>
 
         <ul class="navbar-nav ms-auto">

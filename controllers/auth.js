@@ -110,8 +110,14 @@ exports.login_post = async (req, res) => {
             });
         }
         
+        const userRoles = await user.getRoles({
+            attributes: ["rolename"],
+            raw: true
+        });
+        req.session.roles = userRoles.map((role) => role["rolename"]);
         req.session.isAuth = true;
         req.session.fullname = user.fullname;
+        req.session.userid = user.userid;
 
         const url = req.query.returnUrl || "/";
         return req.session.save(err => {

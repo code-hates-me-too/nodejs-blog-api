@@ -38,6 +38,36 @@
                         <% }) %>
                     </tbody>
                 </table>
+                <hr>
+                <div class="card mt-3">
+                    <div class="card-header">
+                        Yeni Rol Ekle
+                    </div>
+                    <div class="card-body">
+                        <form action="/admin/roles/create" method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                            <div class="row align-items-center">
+                                <div class="col-md-10">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="rolename"
+                                        placeholder="Rol adı"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        Rol Ekle
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
