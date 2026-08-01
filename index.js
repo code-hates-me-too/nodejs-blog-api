@@ -10,6 +10,8 @@ const path = require("path");
 const userRoutes = require("./routes/user");
 const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
+const log = require("./middlewares/log");
+const errorHandling = require("./middlewares/error-handling");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
@@ -93,6 +95,11 @@ User.belongsToMany(Role, {
 app.use("/admin", adminRoutes);
 app.use("/account", authRoutes);
 app.use(userRoutes);
+app.use((req, res) => {
+    res.status(404).render("error/404", {title: "404 Not Found"});
+});
+app.use(log);
+app.use(errorHandling);
 
 app.listen(3000, () => {
     console.log("3000 portundan dinleniyor")

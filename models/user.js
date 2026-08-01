@@ -1,5 +1,6 @@
 const sequelize = require("../data/db");
 const { DataTypes } = require("sequelize");
+const bcrypt = require("bcrypt");
 
 const User = sequelize.define("user", {
     userid: {
@@ -10,15 +11,42 @@ const User = sequelize.define("user", {
     },
     fullname: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: "Ad Soyad girmelisiniz"
+            },
+            isFullname(value) {
+                if(value.split(" ").length < 2) {
+                    throw new Error("Lütfen ad ve soyad bilginizi giriniz");
+                }
+            }
+        }
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: {
+            args: true,
+            msg: "Bu email daha önce kullanılmış"
+        },
+        validate: {
+            notEmpty: {
+                msg: "Email girmelisiniz"
+            },
+            isEmail: {
+                msg: "Hatalı email biçimi"
+            }
+        }
     },
     password: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: "Parola boş geçilemez"
+            },
+        }
     },
     resetToken: {
         type: DataTypes.STRING,
@@ -30,6 +58,12 @@ const User = sequelize.define("user", {
     },
 }, {
     timestamps: true
+});
+
+User.beforeSave(async user => {
+    if (user.changed("password")) {
+        user.password = await bcrypt.hash(user.password, 10);
+    }
 });
 
 module.exports = User;

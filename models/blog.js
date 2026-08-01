@@ -10,7 +10,8 @@ const Blog = sequelize.define("blog", {
     },
     baslik: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     url: {
         type: DataTypes.STRING,
@@ -37,7 +38,14 @@ const Blog = sequelize.define("blog", {
         allowNull: false
     },
 }, {
-    freezeTableName: true
+    freezeTableName: true,
+    validate: {
+        checkValidOnay(){
+            if(this.anasayfa && !this.onay) {
+                throw new Error("Anasayfaya aldığınız blog onaylı olmak zorundadır");
+            }
+        }
+    }
 });
 
 module.exports = Blog;

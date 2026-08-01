@@ -11,27 +11,35 @@
         <form method="post" enctype="multipart/form-data" action="/admin/blogs/create?_csrf=<%= csrfToken %>">
             <div class="row">
                 <div class="col-md-10">
+                    <% if (typeof message !== "undefined" && message) { %>
+                        <div class="alert alert-<%= message.class %>">
+                            <%= message.text %>
+                        </div>
+                    <% } %>
                         <div class="row mb-3">
                             <label for="baslik" class="col-sm-1 col-form-label">Başlık</label>
                             <div class="col-sm-11">
-                                <input type="text" class="form-control" id="baslik" name="baslik">
+                                <input type="text" class="form-control" id="baslik" name="baslik" value="<%= (typeof values !== "undefined") ? values.baslik : "" %>">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="altbaslik" class="col-sm-1 col-form-label">Alt Başlık</label>
                             <div class="col-sm-11">
-                                <textarea
-                                    class="form-control"
-                                    id="altbaslik"
-                                    name="altbaslik"
-                                    rows="2"></textarea>
+                            <textarea
+                                class="form-control"
+                                id="altbaslik"
+                                name="altbaslik"
+                                rows="2"><%= (typeof values !== "undefined") ? values.altbaslik : "" %></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="aciklama" class="col-sm-1 col-form-label">Açıklama</label>
                             <div class="col-sm-11">
-                                <textarea class="form-control" name="aciklama" 
-                                id="editor" rows="10"></textarea>
+                                <textarea 
+                                class="form-control" 
+                                name="aciklama" 
+                                id="editor" 
+                                rows="10"><%= (typeof values !== "undefined") ? values.aciklama : "" %></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">

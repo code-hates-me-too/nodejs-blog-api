@@ -29,7 +29,7 @@ router.post("/blog/delete/:slug", isModerator, adminController.blog_delete_post)
 
 router.get("/blogs/create", isModerator, csrf, adminController.blog_create_get); 
 
-router.post("/blogs/create", isModerator, imageUpload.upload.single("resim"), adminController.blog_create_post); 
+router.post("/blogs/create", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_create_post); 
 
 router.get("/blogs/:slug", isModerator, csrf, adminController.blog_edit_get); 
 

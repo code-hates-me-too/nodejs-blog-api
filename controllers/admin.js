@@ -173,32 +173,52 @@ exports.blog_delete_post = async (req, res) => {
         console.log(err);
     }
 }; 
-
+//*
 exports.blog_create_get = async (req, res) => {
     try {
         const categories = await Category.findAll();
 
         res.render("admins/blog-create", {
             title: "Create Blog",
-            categories: categories
+            categories: categories,
+            message: null
         });
 
     } catch (err) {
         console.log(err);
     }
 }; 
-
+//*
 exports.blog_create_post = async (req, res) => {
     const baslik = req.body.baslik;
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
-    const resim = req.file.filename;
+    // const resim = req.file.filename;
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
     const userid = req.session.userid;
+    let resim = "";
 
     try {
+
+        if(baslik == "") {
+            throw new Error("Başlık boş geçilemez!");
+        }
+        if(baslik.length < 2 || baslik.length > 255) {
+            throw new Error(`Başlık uzunluğu 2-255 karakter arasında olmalıdır! (Mevcut uzunluk "${baslik.length}")`);
+        }        
+        if(aciklama == "") {
+            throw new Error("Açıklama boş geçilemez!");
+        }
+
+
+        if(req.file) {
+            resim = req.file.filename;
+
+            fs.unlink("./public/images/" + req.body.resim, err => {console.log(err)});
+        }
+
         const blog = await Blog.create({
             baslik: baslik,
             url: slugField(baslik),
@@ -214,7 +234,22 @@ exports.blog_create_post = async (req, res) => {
         res.redirect("/admin/blogs?action=create");
 
     } catch (err) {
-        console.log(err);
+        let errorMessage = "";
+
+        if(err instanceof Error) {
+            errorMessage += err.message;
+        }
+
+        res.render("admins/blog-create", {
+            title: "Create Blog",
+            categories: await Category.findAll(),
+            message: {text: errorMessage, class: "danger"},
+            values: {
+                baslik: baslik,
+                altbaslik: altbaslik,
+                aciklama: aciklama
+            }
+        });
     }
 }; 
 
@@ -269,14 +304,11 @@ exports.blog_edit_post = async (req, res) => {
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
-
+    const isAdmin = req.session.roles.includes("admin");
 
     try {
         const blog = await Blog.findOne({
-            where: {
-                blogid: blogid,
-                userid: userid
-            }, 
+            where: isAdmin ? { blogid: blogid } : { url: slug, userid: userid },
             include: {
                 model: Category,
                 attributes: ["categoryid"]

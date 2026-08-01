@@ -10,7 +10,8 @@ const Category = sequelize.define("category", {
     },
     categoryname: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     url: {
         type: DataTypes.STRING,
