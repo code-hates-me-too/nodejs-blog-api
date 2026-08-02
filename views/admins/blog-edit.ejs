@@ -9,28 +9,32 @@
 
     <div class="container mt-3">
         <form method="post" enctype="multipart/form-data" action="/admin/blogs/<%= blog.blogid %>?_csrf=<%= csrfToken %>">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="row">
                 <div class="col-md-10">
-                    
+                    <% if (message != undefined) { %>
+                        <div class="alert alert-<%= message.class %>">
+                            <%= message.text %>
+                        </div>
+                    <% } %>
                         <input type="hidden" name="blogid" value="<%= blog.blogid %>">
                         <input type="hidden" name="eskiResim" value="<%= blog.resim %>">
                         <div class="row mb-3">
                             <label for="baslik" class="col-sm-1 col-form-label">Başlık</label>
                             <div class="col-sm-11">
-                                <input type="text" class="form-control" id="baslik" name="baslik" value="<%= blog.baslik %>">
+                                <input type="text" class="form-control" id="baslik" name="baslik" value="<%= (typeof values !== "undefined") ? values.baslik : blog.baslik %>">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="altbaslik" class="col-sm-1 col-form-label">Alt Başlık</label>
                             <div class="col-sm-11">
-                                <input type="text" class="form-control" id="altbaslik" name="altbaslik" value="<%= blog.altbaslik %>">
+                                <input type="text" class="form-control" id="altbaslik" name="altbaslik" value="<%= (typeof values !== "undefined") ? values.altbaslik : blog.altbaslik %>">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <label for="aciklama" class="col-sm-1 col-form-label">Açıklama</label>
                             <div class="col-sm-11">
-                                <textarea id="editor" class="form-control" name="aciklama"><%- blog.aciklama %></textarea>
+                                <textarea id="editor" class="form-control" name="aciklama"><%- (typeof values !== "undefined") ? values.aciklama : blog.aciklama %></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -38,7 +42,7 @@
                             <div class="col-sm-11">
                                 <img src="/static/images/<%= blog.resim %>" class="img-fluid" style="max-width:250px;" alt="">
                                 <p></p>
-                                <input type="file" class="form-control" id="resim" name="resim" value="<%= blog.resim %>">
+                                <input type="file" class="form-control" id="resim" name="resim" value="<%= (typeof values !== "undefined") ? values.resim : blog.resim %>">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -51,9 +55,9 @@
                 <div class="col-md-2">
                     <p>Seçenekler</p><hr>
                     <div class="row mb-1">
-                        <div class="col-sm-11 offset-sm-1">
+                        <div class="col-sm-11 offset-sm-1">     
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="anasayfa" name="anasayfa" <%= blog.anasayfa ? "checked":"" %>>
+                                <input class="form-check-input" type="checkbox" id="anasayfa" name="anasayfa" <%= (typeof values !== "undefined") ? (values.anasayfa ? "checked" : "") : (blog.anasayfa ? "checked":"") %>>
                                 <label class="form-check-label" for="anasayfa">
                                     Anasayfa
                                 </label>
@@ -63,7 +67,7 @@
                     <div class="row">
                         <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="onay" name="onay" <%= blog.onay ? "checked":"" %>>
+                                <input class="form-check-input" type="checkbox" id="onay" name="onay" <%= (typeof values !== "undefined") ? (values.onay ? "checked" : "") : (blog.onay ? "checked":"") %>>
                                 <label class="form-check-label" for="onay">
                                     Onay
                                 </label>
@@ -75,13 +79,20 @@
                         <% categories.forEach(category => { %>
                             <div class="col-sm-11 offset-sm-1">
                                 <div class="form-check">
+                                    <%
+                                    const checked =
+                                        typeof values !== "undefined"
+                                            ? values.categories.includes(String(category.categoryid))
+                                            : blog.categories.some(cat => cat.categoryid == category.categoryid);
+                                    %>
+
                                     <input
                                         class="form-check-input"
                                         type="checkbox"
                                         id="cat<%= category.categoryid %>"
                                         name="categories[]"
                                         value="<%= category.categoryid %>"
-                                        <%= blog.categories.some(cat => cat.categoryid == category.categoryid) ? "checked" : "" %>
+                                        <%= checked ? "checked" : "" %>
                                     >
                                     <label class="form-check-label" for="cat<%= category.categoryid %>">
                                         <%= category.categoryname %>

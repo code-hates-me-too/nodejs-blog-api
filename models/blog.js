@@ -11,7 +11,16 @@ const Blog = sequelize.define("blog", {
     baslik: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: true,
+        validate: {
+            notEmpty: {
+                msg: "Başlık boş bırakılamaz."
+            },
+            len: {
+                args: [2, 200],
+                msg: "Başlık 2 ile 200 karakter arasında olmalıdır."
+            }
+        }
     },
     url: {
         type: DataTypes.STRING,
@@ -20,10 +29,22 @@ const Blog = sequelize.define("blog", {
     altbaslik: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: "Alt başlık boş bırakılamaz."
+            },
+            len: {
+                args: [10, 255],
+                msg: "Alt başlık en az 10 karakter olmalıdır."
+            }
+        }
     },
     aciklama: {
         type: DataTypes.TEXT,
         allowNull: false,
+        notEmpty: {
+            msg: "Açıklama boş bırakılamaz."
+        }
     },
     resim: {
         type: DataTypes.STRING,

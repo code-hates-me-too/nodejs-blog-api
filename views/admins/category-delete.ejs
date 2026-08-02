@@ -10,17 +10,24 @@
     <div class="container mt-3">
         <div class="row">
             <div class="col-md-12">
-                <div class="alert alert-warning">
-                    <p class="mb-3">
-                        <b><%= category.categoryname %></b> <br> isimli kategoriyi silmek istiyor musunuz?
-                    </p>
-                    <form method="post">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="categoryid" value="<%= category.categoryid %>">
-                        <button class="btn btn-danger" type="submit">Evet</button>
-                        <a href="/admin/categories" class="btn btn-primary">Hayır</a>
-                    </form>
-                </div>
+                <% if (category.blogs.length > 0) { %>
+                    <div class="alert alert-warning">
+                        Bu kategoriye ait bloglar bulunduğu için silinemez.
+                    </div>
+                    <a href="/admin/categories"><button class="btn btn-primary">Geri Dön</button></a>
+                <% } else { %>
+                    <div class="alert alert-warning">
+                        <p class="mb-3">
+                            <b><%= category.categoryname %></b> <br> isimli kategoriyi silmek istiyor musunuz?
+                        </p>
+                        <form method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="categoryid" value="<%= category.categoryid %>">
+                            <button class="btn btn-danger" type="submit">Evet</button>
+                            <a href="/admin/categories" class="btn btn-primary">Hayır</a>
+                        </form>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>

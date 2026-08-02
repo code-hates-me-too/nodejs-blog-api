@@ -9,23 +9,23 @@ const csrf = require("../middlewares/csrf");
 
 router.get("/categories/delete/:slug", isAdmin, csrf, adminController.categories_delete_get); 
 
-router.post("/categories/delete/:slug", isAdmin, adminController.categories_delete_post); 
+router.post("/categories/delete/:slug", isAdmin, csrf, adminController.categories_delete_post); 
 
 router.post("/categories/remove", isAdmin, adminController.get_categories_remove); 
 
 router.get("/categories/create", isAdmin, csrf, adminController.categories_create_get);  
 
-router.post("/categories/create", isAdmin, adminController.categories_create_post); 
+router.post("/categories/create", isAdmin, csrf, adminController.categories_create_post); 
 
 router.get("/categories/:slug", isAdmin, csrf, adminController.categories_edit_get); 
 
-router.post("/categories/:slug", isAdmin, adminController.categories_edit_post); 
+router.post("/categories/:slug", isAdmin, csrf, adminController.categories_edit_post); 
 
-router.get("/categories", isAdmin, adminController.categories_get); 
+router.get("/categories", isAdmin, csrf, adminController.categories_get); 
 
 router.get("/blog/delete/:slug", isModerator, csrf, adminController.blog_delete_get); 
 
-router.post("/blog/delete/:slug", isModerator, adminController.blog_delete_post); 
+router.post("/blog/delete/:slug", isModerator, csrf, adminController.blog_delete_post); 
 
 router.get("/blogs/create", isModerator, csrf, adminController.blog_create_get); 
 
@@ -33,7 +33,7 @@ router.post("/blogs/create", isModerator, csrf, imageUpload.upload.single("resim
 
 router.get("/blogs/:slug", isModerator, csrf, adminController.blog_edit_get); 
 
-router.post("/blogs/:slug", isModerator, imageUpload.upload.single("resim"), adminController.blog_edit_post); 
+router.post("/blogs/:slug", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_edit_post); 
 
 router.get("/blogs", isModerator, adminController.blogs_get); 
 

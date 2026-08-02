@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../data/db");
+const slugField = require("../helpers/slugfield");
 
 const Category = sequelize.define("category", {
     categoryid: {
@@ -11,7 +12,19 @@ const Category = sequelize.define("category", {
     categoryname: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: {
+            args: true,
+            msg: "Bu kategori adı kullanılıyor"
+        },
+        validate: {
+            notEmpty: {
+                msg: "Kategori adı girmelisiniz"
+            },
+            len: {
+                args: [2, 255],
+                msg: "Kategori ismi en az iki harf olmalıdır"
+            }
+        }
     },
     url: {
         type: DataTypes.STRING,
@@ -22,5 +35,9 @@ const Category = sequelize.define("category", {
     freezeTableName: true
 }
 );
+
+Category.beforeValidate(category => {
+    category.url = slugField(category.categoryname);
+});
 
 module.exports = Category;

@@ -25,6 +25,16 @@
                     Kategori düzenlendi.
                  </div>
                 <% } %>
+                <% if (categoriesCount == 0) { %>
+                    <div class="alert alert-danger">
+                        Herhangi bir kategori bulunamadı
+                    </div>
+                <% } %>
+                <% if (message != undefined) { %>
+                    <div class="alert alert-<%= message.class %>">
+                        <%= message.text %>
+                    </div>
+                <% } %>
                 <h3>KATEGORİLER</h3>
                 <table class="table table-bordered table-striped">
                     <thead>

@@ -7,74 +7,147 @@ const { Op, where } = require("sequelize");
 const sequelize = require("../data/db");
 const slugField = require("../helpers/slugfield");
 const { url } = require("inspector");
-
-exports.get_categories_remove = async (req, res) => {
+//*
+exports.get_categories_remove = async (req, res, next) => {
     const blogid = req.body.blogid;
     const categoryid = req.body.categoryid;
     const url = req.body.categoryurl;
-
-    await sequelize.query(`delete from BlogCategory where blogid=${blogid} and categoryid=${categoryid}`);
-    res.redirect("/admin/categories/"+ url);
+    try {
+        await sequelize.query(`delete from BlogCategory where blogid=${blogid} and categoryid=${categoryid}`);
+        return res.redirect("/admin/categories/"+ url);
+    } catch (err) {
+        next(err);
+    }
 }; 
-
-exports.categories_delete_get = async (req, res) => {
+//*
+exports.categories_delete_get = async (req, res, next) => {
     const slug = req.params.slug;
     try {
         const category = await Category.findOne({
             where: {
                 url: slug
-            }
-    });
-        res.render("admins/category-delete", {
+            },
+            include: Blog
+        });
+
+        if (!category) {
+            req.session.message = {
+                text: "Kategori bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/categories");
+            });
+        }
+        return res.render("admins/category-delete", {
             title: "Delete Category",
             category: category
         });
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.categories_delete_post = async (req, res) => {
+//*
+exports.categories_delete_post = async (req, res, next) => {
     const delcategoryid = req.body.categoryid;
     try {
-        await Category.destroy({
+        const category = await Category.findOne({
+            where: {
+                categoryid: delcategoryid
+            },
+            include: Blog
+        });
+        if (!category) {
+            req.session.message = {
+                text: "Silinecek kategori bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+                return res.redirect("/admin/categories");
+            });
+        }   
+
+        if (category.blogs.length > 0) {
+            req.session.message = {
+                text: "Bu kategoriye ait bloglar olduğu için silinemez",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/categories");
+            });
+        }
+        const deletedCount = await Category.destroy({
             where: {
                 categoryid: delcategoryid
             }
         });
-        res.redirect("/admin/categories?action=delete");
+
+        if (deletedCount === 0) {
+            req.session.message = {
+                text: "Silinecek kategori bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/categories");
+            });
+        }
+        return res.redirect("/admin/categories?action=delete");
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.categories_create_get = async (req, res) => {
+//*
+exports.categories_create_get = async (req, res, next) => {
+    const message = req.session.message;
+    delete req.session.message;
     try {
-        res.render("admins/category-create", {
+        return res.render("admins/category-create", {
             title: "Create Category",
+            message: message
         });
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.categories_create_post = async (req, res) => {
+//*
+exports.categories_create_post = async (req, res, next) => {
     const baslik = req.body.baslik;
-    const url = slugField(baslik);
 
     try {
         await Category.create({ 
             categoryname: baslik,
-            url: url
         });
         res.redirect("/admin/categories?action=create");
     } catch (err) {
-        console.log(err);
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            let msg = "";
+            for (let e of err.errors) msg += e.message + " || ";
+
+            return res.render("admins/category-create", {
+                title: baslik + " Edit",
+                message: { text: msg, class: "danger" },
+                values: {
+                    baslik
+                },
+            });
+        }
+        next(err);
     }
 }; 
-
-exports.categories_edit_get = async (req, res) => {
+//*
+exports.categories_edit_get = async (req, res, next) => {
     const slug = req.params.slug;
 
     try {
@@ -83,6 +156,19 @@ exports.categories_edit_get = async (req, res) => {
                 url: slug
             }
         });
+        if(!category) {
+            req.session.message = {
+                text: "Kategori bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/categories");
+            });
+        }
+
         const blogs = await category.getBlogs();
         const blogCount = await category.countBlogs();
         
@@ -91,57 +177,76 @@ exports.categories_edit_get = async (req, res) => {
                 title: " Kategori Edit",
                 category: category,
                 blogs: blogs,
-                blogCount: blogCount
+                blogCount: blogCount,
+                message: null
             });
         }
 
-        res.redirect("/admin/categories");
+        return res.redirect("/admin/categories");
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.categories_edit_post = async (req, res) => {
+//*
+exports.categories_edit_post = async (req, res, next) => {
     const categoryid = req.body.categoryid;
     const baslik = req.body.baslik;
-    const url = slugField(baslik);
-
+    // const url = slugField(baslik);
+    let category;
     try {
-        const pickedCategory = await Category.findByPk(categoryid);
-        if(pickedCategory) {
-            pickedCategory.categoryname = baslik;
-            pickedCategory.url = url;
+        category = await Category.findByPk(categoryid);
+        if(category) {
+            category.categoryname = baslik;
+            // category.url = url;
 
-            await pickedCategory.save()
-            res.redirect("/admin/categories?action=edit");
+            await category.save();
+            return res.redirect("/admin/categories?action=edit");
         }
-        res.redirect("/admin/categories");
+        return res.redirect("/admin/categories");
     } catch (err) {
-        console.log(err);
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            let msg = "";
+            for (let e of err.errors) msg += e.message + " || ";
+
+            return res.render("admins/category-edit", {
+                title: baslik + " Edit",
+                message: { text: msg, class: "danger" },
+                values: {
+                    baslik, categoryid
+                },
+                category: category,
+                blogCount: await category.countBlogs(),
+                blogs: await category.getBlogs()
+            });
+        }
+        next(err);
     }
 }; 
-
-exports.categories_get = async (req, res) => {
+//*
+exports.categories_get = async (req, res, next) => {
+    const message = req.session.message;
+    delete req.session.message;
     try {
         const categories = await Category.findAll();
-        
-        res.render("admins/category-list", {
+        return res.render("admins/category-list", {
             title: "Edit Categories",
             categories: categories,
+            categoriesCount: categories.length,
             action: req.query.action,
+            message: message
         });
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.blog_delete_get = async (req, res) => {
+//*
+exports.blog_delete_get = async (req, res, next) => {
     const slug = req.params.slug;
     const userid = req.session.userid;
-    const isAdmin = req.session.roles.includes("admin");
-
+    
     try {
+        const isAdmin = req.session.roles.includes("admin");
         const blog = await Blog.findOne({
             where: isAdmin ? { url: slug } : {
                 url: slug,
@@ -151,45 +256,76 @@ exports.blog_delete_get = async (req, res) => {
         if(blog) {
             return res.render("admins/blog-delete", {
                 title: "Delete Blog",
-                blog: blog
+                blog: blog,
+                message: null
+            });
+        }
+        if(!blog) {
+            req.session.message = {
+                text: "Silinecek blog bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/blogs");
             });
         }
         return res.redirect("/admin/blogs");
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.blog_delete_post = async (req, res) => {
+//*
+exports.blog_delete_post = async (req, res, next) => {
     const delblogid = req.body.blogid;
     try {
         const blog = await Blog.findByPk(delblogid);
         if(blog) {
+            const image = blog.resim;
             await blog.destroy();
+            if (image) {
+                fs.unlink("./public/images/" + image, err => {
+                    if (err) console.log(err);
+                });
+            }
             return res.redirect("/admin/blogs?action=delete");
         }
-        res.redirect("/admin/blogs");
+        if(!blog) {
+            req.session.message = {
+                text: "Silinecek blog bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+                if (err) return next(err);
+
+                return res.redirect("/admin/blogs");
+            });
+        }
+        return res.redirect("/admin/blogs");
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
 //*
-exports.blog_create_get = async (req, res) => {
+exports.blog_create_get = async (req, res, next) => {
     try {
         const categories = await Category.findAll();
 
-        res.render("admins/blog-create", {
+        return res.render("admins/blog-create", {
             title: "Create Blog",
             categories: categories,
             message: null
         });
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
 //*
-exports.blog_create_post = async (req, res) => {
+exports.blog_create_post = async (req, res, next) => {
     const baslik = req.body.baslik;
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
@@ -252,13 +388,13 @@ exports.blog_create_post = async (req, res) => {
         });
     }
 }; 
-
-exports.blog_edit_get = async (req, res) => {
+//*
+exports.blog_edit_get = async (req, res, next) => {
     const slug = req.params.slug;
     const userid = req.session.userid;
-    const isAdmin = req.session.roles.includes("admin");
-
+    
     try {
+        const isAdmin = req.session.roles.includes("admin");
         const blog = await Blog.findOne({
             where: isAdmin ? { url: slug } : { url: slug, userid: userid },
             include: {
@@ -272,82 +408,110 @@ exports.blog_edit_get = async (req, res) => {
             return res.render("admins/blog-edit", {
                 title: blog.baslik + "Edit",
                 blog: blog,
-                categories: categories
+                categories: categories,
+                message: null
             });
         }
 
         return res.redirect("/admin/blogs");
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
-
-exports.blog_edit_post = async (req, res) => {
+//*
+exports.blog_edit_post = async (req, res, next) => {
     const blogid = req.body.blogid;
     const baslik = req.body.baslik;
     const url = slugField(baslik);
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
     const userid = req.session.userid;
-
     const resim = req.file ? req.file.filename : req.body.eskiResim;
-    
-    if(req.file) {
-        fs.unlink("./public/images/" + req.body.eskiResim, err => {
-            if (err) {
-                console.log(err);
-            }
-        });
-    } 
-
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
-    const isAdmin = req.session.roles.includes("admin");
 
+    let t;
+    let blog; 
     try {
-        const blog = await Blog.findOne({
-            where: isAdmin ? { blogid: blogid } : { url: slug, userid: userid },
+        const isAdmin = (req.session.roles || []).includes("admin");
+        t = await sequelize.transaction();
+
+        blog = await Blog.findOne({   
+            where: isAdmin ? { blogid: blogid } : { blogid: blogid, userid: userid },
             include: {
                 model: Category,
                 attributes: ["categoryid"]
-            }
+            },
+            transaction: t
         });
-        if(blog) {
-            blog.baslik = baslik;
-            blog.url = url;
-            blog.altbaslik = altbaslik;
-            blog.aciklama = aciklama;
-            blog.resim = resim;
-            blog.anasayfa = anasayfa;
-            blog.onay = onay;
 
-            if(kategoriIDler == undefined) {
-                await blog.removeCategories(blog.categories);
-            } else {
-                await blog.removeCategories(blog.categories);
-                const selectedCategories = await Category.findAll({
-                    where: {
-                        categoryid: {
-                            [Op.in]: kategoriIDler
-                        }
-                    }
-                });
-                await blog.addCategories(selectedCategories);
-            }
-
-            await blog.save();
-            return res.redirect("/admin/blogs?action=edit");
+        if (!blog) {
+            await t.rollback();
+            return res.redirect("/admin/blogs");
         }
-        res.redirect("/admin/blogs");
+
+        blog.baslik = baslik;
+        blog.url = url;
+        blog.altbaslik = altbaslik;
+        blog.aciklama = aciklama;
+        blog.resim = resim;
+        blog.anasayfa = anasayfa;
+        blog.onay = onay;
+
+        if (blog.categories.length) {
+            await blog.removeCategories(blog.categories, { transaction: t });
+        }
+        if (kategoriIDler && kategoriIDler.length) {
+            const selectedCategories = await Category.findAll({
+                where: { categoryid: { [Op.in]: kategoriIDler } },
+                transaction: t
+            });
+            await blog.addCategories(selectedCategories, { transaction: t });
+        }
+
+        await blog.save({ transaction: t });
+        await t.commit();
+
+        if (req.file) {
+            fs.unlink("./public/images/" + req.body.eskiResim, err => {
+                if (err) console.log(err);
+            });
+        }
+        return res.redirect("/admin/blogs?action=edit");
 
     } catch (err) {
-        console.log(err);
-    }
-}; 
+        if (t) await t.rollback();
+        if (req.file) {
+            fs.unlink("./public/images/" + req.file.filename, err => {
+                if (err) console.log(err);
+            });
+        }
 
-exports.blogs_get = async (req, res) => {
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            let msg = "";
+            for (let e of err.errors) msg += e.message + " || ";
+
+            const categories = await Category.findAll();
+
+            return res.render("admins/blog-edit", {
+                title: baslik + " Edit",
+                message: { text: msg, class: "danger" },
+                blog: blog,          
+                categories: categories,
+                values: {
+                    baslik, url, altbaslik, aciklama, resim, anasayfa, onay,
+                    categories: kategoriIDler || []
+                }
+            });
+        }
+
+        next(err);
+    }
+};
+//*
+exports.blogs_get = async (req, res, next) => {
     const userid = req.session.userid;
     const isAdmin = req.session.roles.includes("admin");
     const isModerator = req.session.roles.includes("moderator");
@@ -367,11 +531,11 @@ exports.blogs_get = async (req, res) => {
             action: req.query.action
         });
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }; 
 
-exports.roles_get = async (req, res) => {
+exports.roles_get = async (req, res, next) => {
     try {
         const roles = await Role.findAll({
             attributes: {
@@ -394,7 +558,7 @@ exports.roles_get = async (req, res) => {
     }
 };
 
-exports.roles_create_post = async (req, res) => {
+exports.roles_create_post = async (req, res, next) => {
     const rolename = req.body.rolename;
     try {
         await Role.create({
@@ -408,7 +572,7 @@ exports.roles_create_post = async (req, res) => {
     }
 };
 
-exports.roles_delete_get = async (req, res) => {
+exports.roles_delete_get = async (req, res, next) => {
     const roleid = req.params.roleid;
     try {
         const role = await Role.findOne({
@@ -429,7 +593,7 @@ exports.roles_delete_get = async (req, res) => {
     }
 };
 
-exports.roles_delete_post = async (req, res) => {
+exports.roles_delete_post = async (req, res, next) => {
     const roleid = req.body.roleid;
 
     try {
@@ -462,7 +626,7 @@ exports.roles_delete_post = async (req, res) => {
     }
 };
 
-exports.role_remove_post = async (req, res) => {
+exports.role_remove_post = async (req, res, next) => {
     const roleid = req.body.roleid;
     const rolename = req.body.rolename;
     const userid = req.body.userid;
@@ -478,7 +642,7 @@ exports.role_remove_post = async (req, res) => {
     }
 };
 
-exports.role_edit_get = async (req, res) => {
+exports.role_edit_get = async (req, res, next) => {
     const roleid = req.params.roleid;
     try {
         const role = await Role.findOne({
@@ -502,7 +666,7 @@ exports.role_edit_get = async (req, res) => {
     }
 };
 
-exports.role_edit_post = async (req, res) => {
+exports.role_edit_post = async (req, res, next) => {
     const roleid = req.body.roleid;
     const rolename = req.body.rolename;
     try {
@@ -523,7 +687,7 @@ exports.role_edit_post = async (req, res) => {
     }
 };
 
-exports.users_get = async (req, res) => {
+exports.users_get = async (req, res, next) => {
     try {
         const users = await User.findAll({
             attributes: ["userid", "fullname", "email"],
@@ -545,7 +709,7 @@ exports.users_get = async (req, res) => {
     }
 };
 
-exports.users_edit_get = async (req, res) => {
+exports.users_edit_get = async (req, res, next) => {
     const userid = req.params.userid;
     try {
         const user = await User.findOne({
@@ -573,7 +737,7 @@ exports.users_edit_get = async (req, res) => {
     }
 };
 
-exports.users_edit_post = async (req, res) => {
+exports.users_edit_post = async (req, res, next) => {
     const userid = req.body.userid;
     const fullname = req.body.fullname;
     const email = req.body.email;
