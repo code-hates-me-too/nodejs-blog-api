@@ -16,4 +16,7 @@
 - [ ] Admin blog paneline pagination ekle 
 - [ ] Role edit sayfasındaki delete butonunu çalıştır
 - [ ] User edit sayfasındaki delete butonunu çalıştır (pasifleştirmede olabilir)
+- [ ] Kullanıcılara kendi bilgilerini güncelleme imkanı ver
+- [ ] Email doğrulaması ve parolayı iki kez yazma kontrolü ekle
+- [ ] Kodlarda temizlik yap
 - [ ] 

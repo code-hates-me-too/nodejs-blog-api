@@ -28,7 +28,16 @@ const Category = sequelize.define("category", {
     },
     url: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: {
+            args: true,
+            msg: "Kategori başlığının oluşturduğu bağlantı (URL) başka bir kategori tarafından kullanılıyor. Lütfen başlığı biraz değiştirerek tekrar deneyin."
+        },
+        validate: {
+            notEmpty: {
+                msg: "Kategori ismi boş geçilemez."
+            }
+        }
     },
 }, {
     timestamps: false,
@@ -36,8 +45,12 @@ const Category = sequelize.define("category", {
 }
 );
 
-Category.beforeValidate(category => {
+Category.beforeValidate((category, options) => {
     category.url = slugField(category.categoryname);
+
+    if (options.fields && !options.fields.includes("url")) {
+        options.fields.push("url");
+    }
 });
 
 module.exports = Category;

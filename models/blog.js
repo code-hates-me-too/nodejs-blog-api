@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../data/db");
+const slugField = require("../helpers/slugfield");
 
 const Blog = sequelize.define("blog", {
     blogid: {
@@ -11,39 +12,53 @@ const Blog = sequelize.define("blog", {
     baslik: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+            args: true,
+            msg: "Bu başlık kullanılıyor."
+        },
         validate: {
             notEmpty: {
-                msg: "Başlık boş bırakılamaz."
+                msg: "Başlık boş geçilemez."
             },
             len: {
                 args: [2, 200],
-                msg: "Başlık 2 ile 200 karakter arasında olmalıdır."
+                msg: "Başlık uzunluğu en az 2 karakter olmalıdır."
             }
         }
     },
     url: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false, 
+        unique: {
+            args: true,
+            msg: "Blog başlığının oluşturduğu bağlantı (URL) başka bir blog tarafından kullanılıyor. Lütfen başlığı biraz değiştirerek tekrar deneyin."
+        },
+        validate: {
+            notEmpty: {
+                msg: "Blog bağlantısı oluşturulamadı."
+            }
+        }
     },
     altbaslik: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
             notEmpty: {
-                msg: "Alt başlık boş bırakılamaz."
+                msg: "Alt başlık boş geçilemez."
             },
             len: {
-                args: [10, 255],
-                msg: "Alt başlık en az 10 karakter olmalıdır."
+                args: [2, 255],
+                msg: "Alt başlık en az 2 karakter olmalıdır."
             }
         }
     },
     aciklama: {
         type: DataTypes.TEXT,
         allowNull: false,
-        notEmpty: {
-            msg: "Açıklama boş bırakılamaz."
+        validate: {
+            notEmpty: {
+                msg: "Açıklama boş geçilemez."
+            }
         }
     },
     resim: {
@@ -66,6 +81,16 @@ const Blog = sequelize.define("blog", {
                 throw new Error("Anasayfaya aldığınız blog onaylı olmak zorundadır");
             }
         }
+    }
+});
+
+Blog.beforeValidate((blog, options) => {
+    if (blog.changed("baslik")) {
+        blog.url = slugField(blog.baslik);
+    }
+
+    if (options.fields && !options.fields.includes("url")) {
+        options.fields.push("url");
     }
 });
 

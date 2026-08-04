@@ -35,26 +35,26 @@ router.get("/blogs/:slug", isModerator, csrf, adminController.blog_edit_get);
 
 router.post("/blogs/:slug", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_edit_post); 
 
-router.get("/blogs", isModerator, adminController.blogs_get); 
+router.get("/blogs", isModerator, csrf, adminController.blogs_get); 
 
 router.get("/roles", isAdmin, csrf, adminController.roles_get);
 
-router.post("/roles/create", isAdmin, adminController.roles_create_post);
+router.post("/roles/create", isAdmin, csrf, adminController.roles_create_post);
 
 router.get("/roles/delete/:roleid", isAdmin, csrf, adminController.roles_delete_get);
 
-router.post("/roles/delete/:roleid", isAdmin, adminController.roles_delete_post);
+router.post("/roles/delete/:roleid", isAdmin, csrf, adminController.roles_delete_post);
 
-router.post("/roles/remove", isAdmin, adminController.role_remove_post);
+router.post("/roles/remove", isAdmin, csrf, adminController.role_remove_post);
 
 router.get("/roles/:roleid", isAdmin, csrf, adminController.role_edit_get);
 
-router.post("/roles/:roleid", isAdmin, adminController.role_edit_post);
+router.post("/roles/:roleid", isAdmin, csrf, adminController.role_edit_post);
 
-router.get("/users", isAdmin, adminController.users_get);
+router.get("/users", isAdmin, csrf, adminController.users_get);
 
 router.get("/users/:userid", isAdmin, csrf, adminController.users_edit_get);
 
-router.post("/users/:userid", isAdmin, adminController.users_edit_post);
+router.post("/users/:userid", isAdmin, csrf, adminController.users_edit_post);
 
 module.exports = router;
