@@ -19,4 +19,5 @@
 - [ ] Kullanıcılara kendi bilgilerini güncelleme imkanı ver
 - [ ] Email doğrulaması ve parolayı iki kez yazma kontrolü ekle
 - [ ] Kodlarda temizlik yap
+- [ ] Default member rolü ve bunu kimin oluşturacağı sorusu
 - [ ] 

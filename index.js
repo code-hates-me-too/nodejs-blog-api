@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const path = require("path");
 const userRoutes = require("./routes/user");
+const apiRoutes = require("./api/routes/index");
 const adminRoutes = require("./routes/admin");
 const authRoutes = require("./routes/auth");
 const log = require("./middlewares/log");
@@ -17,6 +18,7 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const app = express();
 
 app.set("view engine", "ejs");
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const sessionStore = new SequelizeStore({
@@ -32,6 +34,7 @@ app.use(session({
     store: sessionStore
 }));
 app.use(locals);
+app.use("/api", apiRoutes);
 app.use(csurf());
 
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
@@ -89,6 +92,8 @@ User.belongsToMany(Role, {
 
     // await sequelize.sync({ force: true });
 
+    // await seedRoles();
+    
     // await dummyData();
 })();
 

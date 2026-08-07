@@ -4,6 +4,7 @@ const emailService = require("../helpers/send-mail");
 const config = require("../config");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
+const Role = require("../models/role");
 
 exports.register_get = async (req, res, next) => {
     try {
@@ -33,6 +34,14 @@ exports.register_post = async (req, res, next) => {
             subject: "Hesabınız Oluşturuldu",
             text: "Hesabınız başarıyla oluşturuldu"
         });
+
+        const defaultRole = await Role.findOne({
+            where: {
+                rolename: "user"
+            }
+        });
+
+        await newUser.addRole(defaultRole);
 
         req.session.message = {
             text: "Hesabınıza giriş yapabilirsiniz",
