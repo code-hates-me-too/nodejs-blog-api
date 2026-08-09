@@ -6,15 +6,11 @@ const adminController = require("../controllers/admin");
 const verifyToken = require("../middlewares/verifyToken");
 const requireRole = require("../middlewares/requireRole");
 
-// router.get("/categories/delete/:slug", isAdmin, csrf, adminController.categories_delete_get); 
+router.delete("/categories/delete/:id", verifyToken, requireRole("admin"), adminController.categories_delete_delete); 
 
-// router.post("/categories/delete/:slug", isAdmin, csrf, adminController.categories_delete_post); 
+router.delete("/categories/:categoryid/blogs/:blogid", verifyToken, requireRole("admin"), adminController.categories_remove_delete); 
 
-// router.post("/categories/remove", isAdmin, adminController.get_categories_remove); 
-
-// router.get("/categories/create", isAdmin, csrf, adminController.categories_create_get);  
-
-// router.post("/categories/create", isAdmin, csrf, adminController.categories_create_post); 
+router.post("/categories/create", verifyToken, requireRole("admin"), adminController.categories_create_post); 
 
 router.get("/categories/:id", verifyToken, requireRole("admin"), adminController.categories_edit_get); 
 
@@ -22,19 +18,17 @@ router.put("/categories/:id", verifyToken, requireRole("admin"), adminController
 
 router.get("/categories", verifyToken, requireRole("admin"), adminController.categories_get); 
 
-// router.get("/blog/delete/:slug", isModerator, csrf, adminController.blog_delete_get); 
+router.delete("/blog/delete/:id", verifyToken, requireRole("admin", "moderator"), adminController.blog_delete_delete); 
 
-// router.post("/blog/delete/:slug", isModerator, csrf, adminController.blog_delete_post); 
+router.get("/blogs/create", verifyToken, requireRole("admin", "moderator"), adminController.blog_create_get); 
 
-// router.get("/blogs/create", isModerator, csrf, adminController.blog_create_get); 
+router.post("/blogs/create", verifyToken, requireRole("admin", "moderator"), imageUpload.upload.single("resim"), adminController.blog_create_post); 
 
-// router.post("/blogs/create", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_create_post); 
+router.get("/blogs/:blogid", verifyToken, requireRole("admin", "moderator"), adminController.blog_edit_get); 
 
-// router.get("/blogs/:slug", isModerator, csrf, adminController.blog_edit_get); 
+router.put("/blogs/:blogid", verifyToken, requireRole("admin", "moderator"), imageUpload.upload.single("resim"), adminController.blog_edit_put); 
 
-// router.post("/blogs/:slug", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_edit_post); 
-
-// router.get("/blogs", verifyToken, requireRole("admin"), adminController.blogs_get); 
+router.get("/blogs", verifyToken, requireRole("admin", "moderator"), adminController.blogs_get); 
 
 // router.get("/roles", verifyToken, requireRole("admin"), adminController.roles_get);
 

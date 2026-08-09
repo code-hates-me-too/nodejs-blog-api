@@ -20,4 +20,6 @@
 - [ ] Email doğrulaması ve parolayı iki kez yazma kontrolü ekle
 - [ ] Kodlarda temizlik yap
 - [ ] Default member rolü ve bunu kimin oluşturacağı sorusu
+- [ ] API blogs sayfası için pagination ve diğer api düzeltmeleri
+- [ ] API ve normal route linklerini derle
 - [ ] 
