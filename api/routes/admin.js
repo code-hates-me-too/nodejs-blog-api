@@ -30,24 +30,22 @@ router.put("/blogs/:blogid", verifyToken, requireRole("admin", "moderator"), ima
 
 router.get("/blogs", verifyToken, requireRole("admin", "moderator"), adminController.blogs_get); 
 
-// router.get("/roles", verifyToken, requireRole("admin"), adminController.roles_get);
+router.delete("/roles/delete/:roleid", verifyToken, requireRole("admin"), adminController.roles_delete_delete);
 
-// router.post("/roles/create", isAdmin, csrf, adminController.roles_create_post);
+router.delete("/roles/remove", verifyToken, requireRole("admin"), adminController.role_remove_delete);
 
-// router.get("/roles/delete/:roleid", isAdmin, csrf, adminController.roles_delete_get);
+router.post("/roles/create", verifyToken, requireRole("admin"), adminController.roles_create_post);
 
-// router.post("/roles/delete/:roleid", isAdmin, csrf, adminController.roles_delete_post);
+router.get("/roles", verifyToken, requireRole("admin"), adminController.roles_get);
 
-// router.post("/roles/remove", isAdmin, csrf, adminController.role_remove_post);
+router.get("/roles/:roleid", verifyToken, requireRole("admin"), adminController.role_edit_get);
 
-// router.get("/roles/:roleid", isAdmin, csrf, adminController.role_edit_get);
+router.put("/roles/:roleid", verifyToken, requireRole("admin"), adminController.role_edit_put);
 
-// router.post("/roles/:roleid", isAdmin, csrf, adminController.role_edit_post);
+router.get("/users", verifyToken, requireRole("admin"), adminController.users_get);
 
-// router.get("/users", verifyToken, requireRole("admin"), adminController.users_get);
+router.get("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_get);
 
-// router.get("/users/:userid", isAdmin, csrf, adminController.users_edit_get);
-
-// router.post("/users/:userid", isAdmin, csrf, adminController.users_edit_post);
+router.put("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_put);
 
 module.exports = router;

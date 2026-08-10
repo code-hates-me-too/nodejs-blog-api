@@ -521,3 +521,349 @@ exports.blogs_get = async (req, res, next) => {
         next(err);
     }
 }; 
+
+exports.users_get = async (req, res, next) => {
+    const message = req.session.message || null;
+    req.session.message = null; 
+    try {
+        const users = await User.findAll({
+            attributes: ["userid", "fullname", "email"],
+            include: {
+                model: Role,
+                attributes: ["rolename"]
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: users
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.users_edit_get = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findOne({
+            where: {
+                userid: userid
+            },
+            include: {
+                model: Role,
+                attributes: ["roleid"]
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Kullanıcı bulunamadı."
+            });
+        }
+
+        const roles = await Role.findAll();
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                user: user,
+                roles: roles
+            }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.users_edit_put = async (req, res, next) => {
+    const {
+        userid,
+        fullname,
+        email,
+        roles
+    } = req.body;
+    try {
+        const user = await User.findOne({
+            where: { userid: userid },
+            include: { model: Role, attributes: ["roleid"] },
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Kullanıcı bulunamadı."
+            });
+        }
+
+        user.fullname = fullname;
+        user.email = email;
+        
+        await user.removeRoles(user.roles);
+
+        if (roles) {
+
+            const roleIds = Array.isArray(roles)
+                ? roles
+                : [roles];
+
+            const selectedRoles = await Role.findAll({
+                where: {
+                    roleid: {
+                        [Op.in]: roleIds
+                    }
+                }
+            });
+
+            await user.addRoles(selectedRoles);
+        }
+        await user.save();
+
+        const updatedUser = await User.findOne({
+            where: {
+                userid: userid
+            },
+            attributes: ["userid", "fullname", "email"],
+            include: {
+                model: Role,
+                attributes: ["roleid", "rolename"]
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Kullanıcı bilgileri düzenlendi.",
+            data: updatedUser
+        });
+
+    } catch (err) {
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            return res.status(400).json({
+                success: false,
+                message: "Kullanıcı bilgileri düzenlenemedi.",
+                errors: err.errors.map(e => ({
+                    field: e.path,
+                    value: e.value,
+                    message: e.message
+                }))
+            });
+        }
+
+        next(err);
+    }
+};
+
+exports.roles_get = async (req, res, next) => {
+    try {
+        const roles = await Role.findAll({
+            attributes: {
+                include: ["role.roleid", "role.rolename", [sequelize.fn("COUNT", sequelize.col("users.userid")), "user_count"]]
+            },
+            include: [
+                {model: User, attributes: ["userid"]}
+            ],
+            group: ["role.roleid"],
+            raw: true,
+            includeIgnoreAttributes: false
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: roles
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.role_edit_get = async (req, res, next) => {
+    const roleid = req.params.roleid;
+    try {
+        const role = await Role.findOne({
+            where: {
+                roleid: roleid
+            }
+        });
+
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Aranan rol bulunamadı."
+            });
+        }
+
+        const users = await role.getUsers({
+            attributes: ["userid", "fullname", "email"]
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                role: {
+                    roleid: role.roleid,
+                    rolename: role.rolename
+                },
+                users: users
+            }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.role_edit_put = async (req, res, next) => {
+    const roleid = req.params.roleid;
+    const { rolename } = req.body;
+    try {
+        const role = await Role.findOne({
+            where: {
+                roleid: roleid
+            }
+        });
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Aranan rol bulunamadı."
+            });
+        }
+        role.rolename = rolename;
+        await role.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Rol düzenlendi.",
+            data: {
+                roleid: role.roleid,
+                rolename: role.rolename
+            }
+        });
+
+    } catch (err) {
+         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            const errors = err.errors.map(e => e.message);
+
+            return res.status(400).json({
+                success: false,
+                message: "Rol düzenlenemedi.",
+                errors: errors,
+                values: {
+                    rolename: rolename
+                }
+            });
+        }
+
+        next(err);
+    }
+};
+
+exports.roles_create_post = async (req, res, next) => {
+    const { rolename } = req.body;
+    try {
+        const role = await Role.create({
+            rolename: rolename
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Rol eklendi.",
+            data: {
+                roleid: role.roleid,
+                rolename: role.rolename
+            }
+        });
+
+    } catch (err) {
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            const errors = err.errors.map(e => ({
+                field: e.path,
+                value: e.value,
+                message: e.message
+            }));
+
+            return res.status(400).json({
+                success: false,
+                message: "Rol eklenemedi.",
+                errors: errors,
+                values: {
+                    rolename: rolename
+                }
+            });
+        }
+
+        next(err);
+    }
+};
+
+exports.role_remove_delete = async (req, res, next) => {
+    const { roleid, userid } = req.body;
+    try {
+        const user = await User.findByPk(userid);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Kullanıcı bulunamadı."
+            });
+        }
+
+        const role = await Role.findByPk(roleid);
+
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Rol bulunamadı."
+            });
+        }
+
+        await user.removeRole(role);
+
+        return res.status(200).json({
+            success: true,
+            message: "Kullanıcının rolü kaldırıldı."
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.roles_delete_delete = async (req, res, next) => {
+    const roleid = req.params.roleid;
+    try {
+        const role = await Role.findByPk(roleid, {
+            include: {
+                model: User,
+                attributes: ["userid"]
+            }
+        });
+
+        if (!role) {
+            return res.status(404).json({
+                success: false,
+                message: "Rol bulunamadı."
+            });
+        }
+
+        if (role.users.length > 0) {
+            return res.status(409).json({
+                success: false,
+                message: "Bu role atanmış kullanıcılar olduğu için silinemez.",
+                userCount: role.users.length
+            });
+        }
+
+        await role.destroy();
+
+        return res.status(200).json({
+            success: true,
+            message: "Rol silindi."
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};

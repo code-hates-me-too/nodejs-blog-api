@@ -22,4 +22,5 @@
 - [ ] Default member rolü ve bunu kimin oluşturacağı sorusu
 - [ ] API blogs sayfası için pagination ve diğer api düzeltmeleri
 - [ ] API ve normal route linklerini derle
+- [ ] Admin son rolünü ve kendi rolünü kaldıramasın
 - [ ] 
