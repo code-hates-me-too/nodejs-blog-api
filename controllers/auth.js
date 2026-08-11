@@ -280,7 +280,6 @@ exports.newpassword_get = async (req, res, next) => {
         });
         
     } catch (err) {
-        console.log(err);
         next(err);
     }
 };
@@ -362,7 +361,6 @@ exports.newpassword_post = async (req, res, next) => {
             });
 
         }
-        console.log(err);
         next(err);
     }
 };
