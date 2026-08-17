@@ -50,11 +50,8 @@ exports.register_post = async (req, res, next) => {
 
         return req.session.save(err => {if (err) {console.log(err);} return res.redirect("login");});
     } catch (err) {
-        let msg = "";
         if(err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            for(let e of err.errors) {
-                msg += e.message + " || "
-            }
+            const msg = getErrorMessage(err);
 
             return res.render("auth/register", {
                 title: "Kullanıcı Kayıt",
@@ -344,11 +341,7 @@ exports.newpassword_post = async (req, res, next) => {
             err.name == "SequelizeUniqueConstraintError"
         ) {
 
-            let msg = "";
-
-            for (let e of err.errors) {
-                msg += e.message + " ";
-            }
+            const msg = getErrorMessage(err);
 
             return res.render("auth/new-password", {
                 title: "Yeni Parola",

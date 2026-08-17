@@ -1,11 +1,11 @@
 # Yapılacaklar
 
 - [ ] CKEditor'ü CDN yerine NPM ile kur
-- [ ] Görsel olmadan blog oluşturabilsin
-- [ ] Blog silinince resim dosyasını da sil
-- [ ] Mevcut blogların görselleri kaldırılabilsin
+- [X] Görsel olmadan blog oluşturabilsin
+- [X] Blog silinince resim dosyasını da sil
+- [X] Mevcut blogların görselleri kaldırılabilsin
 - [ ] Bootstrap yerine özgün CSS tasarla
-- [ ] İşlem mesajlarını düzenle
+- [X] İşlem mesajlarını düzenle
 - [ ] Yüklenen resmi önizleme olarak göster
 - [ ] Sadece resim uzantılarına izin ver
 - [ ] Maksimum dosya, başlık, açıklama, metin boyutu belirle
@@ -23,4 +23,5 @@
 - [ ] API blogs sayfası için pagination ve diğer api düzeltmeleri
 - [ ] API ve normal route linklerini derle
 - [ ] Admin son rolünü ve kendi rolünü kaldıramasın
+- [ ] Register hata sayfasında direkt next'e düşüyor
 - [ ] 

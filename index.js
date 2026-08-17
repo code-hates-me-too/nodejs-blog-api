@@ -46,6 +46,7 @@ const Category = require("./models/category");
 const User = require("./models/user");
 const Role = require("./models/role");
 const dummyData = require("./data/dummy-data");
+const seedRoles = require("./seeders/roleSeeder");
 
 const BlogCategory = sequelize.define("BlogCategory", {}, {
     timestamps: false,
@@ -92,7 +93,7 @@ User.belongsToMany(Role, {
 
     // await sequelize.sync({ force: true });
 
-    // await seedRoles();
+    // // await seedRoles();
     
     // await dummyData();
 })();

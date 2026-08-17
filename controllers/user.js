@@ -1,6 +1,6 @@
 const Blog = require("../models/blog");
 const Category = require("../models/category");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 
 exports.blog_details = async (req, res, next) => {
     const slug = req.params.slug;

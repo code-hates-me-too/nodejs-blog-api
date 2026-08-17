@@ -42,6 +42,12 @@
                             <div class="col-sm-11">
                                 <img src="/static/images/<%= blog.resim %>" class="img-fluid" style="max-width:250px;" alt="">
                                 <p></p>
+                                <% if (blog.resim) { %>
+                                    <input class="form-check-input" type="checkbox" id="resimKaldir" name="resimKaldir">
+                                    <label class="form-check-label" for="resimKaldir">
+                                        Resmi Kaldır
+                                    </label>
+                                <% } %>
                                 <input type="file" class="form-control" id="resim" name="resim" value="<%= (typeof values !== "undefined") ? values.resim : blog.resim %>">
                             </div>
                         </div>

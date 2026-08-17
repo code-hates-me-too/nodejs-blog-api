@@ -3,10 +3,10 @@ const Blog = require("../models/blog");
 const Category = require("../models/category");
 const Role = require("../models/role");
 const User = require("../models/user");
-const { Op, where } = require("sequelize");
+const { Op } = require("sequelize");
 const sequelize = require("../data/db");
 const slugField = require("../helpers/slugfield");
-const { url } = require("inspector");
+const getErrorMessage = require("../helpers/error-message");
 
 exports.get_categories_remove = async (req, res, next) => {
     const blogid = req.body.blogid;
@@ -238,8 +238,7 @@ exports.categories_edit_post = async (req, res, next) => {
 
     } catch (err) {
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             return res.render("admins/category-edit", {
                 title: baslik + " Edit",
@@ -361,7 +360,7 @@ exports.blog_create_post = async (req, res, next) => {
     const baslik = req.body.baslik;
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
-    const resim = req.file ? req.file.filename : "";
+    const resim = req.file ? req.file.filename : null;
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
@@ -402,8 +401,7 @@ exports.blog_create_post = async (req, res, next) => {
             });
         }   
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             return res.render("admins/blog-create", {
                 title: "Create Blog",
@@ -470,6 +468,7 @@ exports.blog_edit_post = async (req, res, next) => {
     const anasayfa = req.body.anasayfa == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
+    const resimKaldir = req.body.resimKaldir === "on";
 
     let t;
     let blog; 
@@ -494,9 +493,18 @@ exports.blog_edit_post = async (req, res, next) => {
         blog.baslik = baslik;
         blog.altbaslik = altbaslik;
         blog.aciklama = aciklama;
-        blog.resim = resim;
         blog.anasayfa = anasayfa;
         blog.onay = onay;
+        blog.resim = resim;
+        if (resimKaldir) {
+            if (!req.file) {
+                blog.resim = null;
+
+                fs.unlink("./public/images/" + req.body.eskiResim, err => {
+                    if (err) console.log(err);
+                });
+            }
+        }
 
         if (blog.categories.length) {
             await blog.removeCategories(blog.categories, { transaction: t });
@@ -537,8 +545,7 @@ exports.blog_edit_post = async (req, res, next) => {
         }
 
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             const categories = await Category.findAll();
 
@@ -630,8 +637,7 @@ exports.roles_create_post = async (req, res, next) => {
 
     } catch (err) {
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             const roles = await Role.findAll({
                 attributes: {
@@ -746,7 +752,7 @@ exports.role_edit_get = async (req, res, next) => {
 
         if(role) {
             return res.render("admins/role-edit", {
-                title: role.rolename + "Edit",
+                title: role.rolename + " Edit",
                 role: role,
                 users: users,
                 message: message
@@ -793,8 +799,7 @@ exports.role_edit_post = async (req, res, next) => {
 
     } catch (err) {
          if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             const role = await Role.findOne({
                 where: {
@@ -918,8 +923,7 @@ exports.users_edit_post = async (req, res, next) => {
 
     } catch (err) {
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            let msg = "";
-            for (let e of err.errors) msg += e.message + " || ";
+            const msg = getErrorMessage(err);
 
             const categories = await Category.findAll();
             const user = await User.findOne({

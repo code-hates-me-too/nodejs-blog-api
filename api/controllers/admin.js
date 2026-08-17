@@ -413,6 +413,15 @@ exports.blog_edit_put = async (req, res, next) => {
         blog.altbaslik = altbaslik;
         blog.aciklama = aciklama;
         blog.resim = resim;
+        if (resimKaldir) { 
+            if (!req.file) { 
+                blog.resim = null; 
+ 
+                fs.unlink("./public/images/" + req.body.eskiResim, err => { 
+                    if (err) console.log(err); 
+                }); 
+            } 
+        }
         blog.anasayfa = anasayfa === "true" || anasayfa === "1";
         blog.onay = onay === "true" || onay === "1";
 

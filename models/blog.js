@@ -63,7 +63,7 @@ const Blog = sequelize.define("blog", {
     },
     resim: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     anasayfa: {
         type: DataTypes.BOOLEAN,
