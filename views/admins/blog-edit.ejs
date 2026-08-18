@@ -39,16 +39,41 @@
                         </div>
                         <div class="row mb-3">
                             <label for="resim" class="col-sm-1 col-form-label">Resim</label>
+
                             <div class="col-sm-11">
-                                <img src="/static/images/<%= blog.resim %>" class="img-fluid" style="max-width:250px;" alt="">
+
+                                <img
+                                    id="resimPreview"
+                                    src="/static/images/<%= blog.resim %>"
+                                    class="img-fluid"
+                                    style="max-width:250px;"
+                                    alt=""
+                                >
+
                                 <p></p>
+
                                 <% if (blog.resim) { %>
-                                    <input class="form-check-input" type="checkbox" id="resimKaldir" name="resimKaldir">
-                                    <label class="form-check-label" for="resimKaldir">
-                                        Resmi Kaldır
-                                    </label>
+                                    <div class="form-check mb-2">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="resimKaldir"
+                                            name="resimKaldir"
+                                        >
+                                        <label class="form-check-label" for="resimKaldir">
+                                            Resmi Kaldır
+                                        </label>
+                                    </div>
                                 <% } %>
-                                <input type="file" class="form-control" id="resim" name="resim" value="<%= (typeof values !== "undefined") ? values.resim : blog.resim %>">
+
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    id="resim"
+                                    name="resim"
+                                    value="<%= (typeof values !== "undefined") ? values.resim : blog.resim %>"
+                                >
+
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -113,5 +138,21 @@
         </form>
     </div>
     <%- include('../partials/ckeditor') %>
+    <script>
+        const resimInput = document.getElementById("resim");
+        const resimPreview = document.getElementById("resimPreview");
+
+        resimInput.addEventListener("change", function () {
+            const file = this.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(file);
+
+            resimPreview.src = imageUrl;
+        });
+    </script>
 </body>
-</html>
+</html>     

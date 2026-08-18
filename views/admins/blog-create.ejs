@@ -44,8 +44,19 @@
                         </div>
                         <div class="row mb-3">
                             <label for="resim" class="col-sm-1 col-form-label">Resim</label>
+
                             <div class="col-sm-11">
-                                <input type="file" class="form-control" id="resim" name="resim">
+                                <input type="file" class="form-control" id="resim" name="resim" accept="image/*">
+
+                                <div class="mt-3">
+                                    <img
+                                        id="resimPreview"
+                                        src=""
+                                        alt="Seçilen resim önizlemesi"
+                                        class="img-fluid"
+                                        style="max-width: 250px; display: none;"
+                                    >
+                                </div>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -104,5 +115,25 @@
         </div>
     </div>
     <%- include('../partials/ckeditor') %>
+
+    <script>
+        const resimInput = document.getElementById("resim");
+        const resimPreview = document.getElementById("resimPreview");
+
+        resimInput.addEventListener("change", function () {
+            const file = this.files[0];
+
+            if (!file) {
+                resimPreview.src = "";
+                resimPreview.style.display = "none";
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(file);
+
+            resimPreview.src = imageUrl;
+            resimPreview.style.display = "block";
+        });
+    </script>
 </body>
 </html>

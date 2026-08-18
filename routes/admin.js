@@ -29,11 +29,11 @@ router.post("/blog/delete/:slug", isModerator, csrf, adminController.blog_delete
 
 router.get("/blogs/create", isModerator, csrf, adminController.blog_create_get); 
 
-router.post("/blogs/create", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_create_post); 
+router.post("/blogs/create", isModerator, csrf, imageUpload.handleUpload(imageUpload.upload.single("resim")), adminController.blog_create_post); 
 
 router.get("/blogs/:slug", isModerator, csrf, adminController.blog_edit_get); 
 
-router.post("/blogs/:slug", isModerator, csrf, imageUpload.upload.single("resim"), adminController.blog_edit_post); 
+router.post("/blogs/:slug", isModerator, csrf, imageUpload.handleUpload(imageUpload.upload.single("resim")), adminController.blog_edit_post); 
 
 router.get("/blogs", isModerator, csrf, adminController.blogs_get); 
 

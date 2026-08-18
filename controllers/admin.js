@@ -365,7 +365,19 @@ exports.blog_create_post = async (req, res, next) => {
     const onay = req.body.onay == "on" ? 1 : 0;
     const kategoriIDler = req.body.categories;
     const userid = req.session.userid;
+    
+    if (req.uploadError) {
+        const msg = req.uploadError.code === "LIMIT_FILE_SIZE"
+            ? "Resim boyutu 5MB'ı geçemez."
+            : req.uploadError.message;
 
+        return res.render("admins/blog-create", {
+            title: "Create Blog",
+            categories: await Category.findAll(),
+            message: { text: msg, class: "danger" },
+            values: { baslik, altbaslik, aciklama }
+        });
+    }
     const t = await sequelize.transaction();
 
     try {
@@ -470,6 +482,31 @@ exports.blog_edit_post = async (req, res, next) => {
     const kategoriIDler = req.body.categories;
     const resimKaldir = req.body.resimKaldir === "on";
 
+    if (req.uploadError) {
+        const msg = req.uploadError.code === "LIMIT_FILE_SIZE"
+            ? "Resim boyutu 5MB'ı geçemez."
+            : req.uploadError.message;
+
+        const blog = await Blog.findOne({
+            where: { blogid },
+            include: { model: Category, attributes: ["categoryid"] }
+        });
+        const categories = await Category.findAll();
+
+        return res.render("admins/blog-edit", {
+            title: "Edit " + baslik,
+            message: { text: msg, class: "danger" },
+            blog,
+            categories,
+            values: {
+                baslik, altbaslik, aciklama,
+                resim: req.body.eskiResim,
+                anasayfa, onay,
+                categories: kategoriIDler || []
+            }
+        });
+    }
+
     let t;
     let blog; 
     try {
@@ -495,12 +532,13 @@ exports.blog_edit_post = async (req, res, next) => {
         blog.aciklama = aciklama;
         blog.anasayfa = anasayfa;
         blog.onay = onay;
+        const eskiResim = blog.resim;
         blog.resim = resim;
         if (resimKaldir) {
             if (!req.file) {
                 blog.resim = null;
 
-                fs.unlink("./public/images/" + req.body.eskiResim, err => {
+                fs.unlink("./public/images/" + eskiResim, err => {
                     if (err) console.log(err);
                 });
             }
