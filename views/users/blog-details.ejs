@@ -7,20 +7,46 @@
     
     <%- include('../partials/nav') %>
 
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col-5">
-                <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+    <div class="container mt-4">
+
+        <div class="starry-blog-detail">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-5">
+                    <div class="starry-blog-image">
+                        <img 
+                            src="/static/images/<%= blog.resim %>" 
+                            class="img-fluid" 
+                            alt="<%= blog.baslik %>"
+                        >
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="starry-blog-header">
+
+                        <h1>
+                            <%= blog.baslik %>
+                        </h1>
+
+                        <p class="starry-blog-subtitle">
+                            <%= blog.altbaslik %>
+                        </p>
+
+                    </div>
+                </div>
+
             </div>
-            <div class="col-7">
-                <h3><%= blog.baslik %></h3>
-                <p><%= blog.altbaslik %></p>
+
+            <div class="starry-blog-divider"></div>
+
+            <div class="starry-blog-content">
+                <%- blog.aciklama %>
             </div>
+
         </div>
-        <hr>
-        <div class="row">
-            <p><%- blog.aciklama %></p>
-        </div>
+
     </div>
 
 </body>

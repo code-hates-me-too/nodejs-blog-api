@@ -7,34 +7,51 @@
     
     <%- include('../partials/nav') %>
 
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="list-group">
+    <div class="container mt-4">
 
-                    <%- include('../partials/category-menu', { categories, selectedCategory }) %>
-                    
+        <div class="starry-blog-list">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                        
+
+                        <div class="list-group">
+                            <%- include('../partials/category-menu', { categories, selectedCategory }) %>
+                        </div>
+
                 </div>
-            </div>
-            <div class="col-md-9">
-                <h1 class="h3 mb-3">Blogs</h1>
+
+                <div class="col-md-9">
+
+                    <div class="starry-blog-list-header">
+                        <h1>Blogs</h1>
+                    </div>
 
                     <%- include('../partials/pagination') %>
 
-
-                <% if (blogs.length == 0) { %>
+                    <% if (blogs.length == 0) { %>
                         <%- include('../partials/no-products') %>
-                <% } %>
-                <% blogs.forEach(blog => { %>
-                        <%- include('../partials/blog-card', { blog }) %>
-                <% }) %>
+                    <% } %>
 
-               
+                    <div class="starry-blog-items">
+
+                        <% blogs.forEach(blog => { %>
+                            <%- include('../partials/blog-card', { blog }) %>
+                        <% }) %>
+
+                    </div>
+
                     <%- include('../partials/pagination') %>
-               
+
+                </div>
 
             </div>
+
         </div>
+
     </div>
+
 </body>
 </html>

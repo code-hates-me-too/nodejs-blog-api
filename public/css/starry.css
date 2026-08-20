@@ -1,11 +1,13 @@
 :root {
     --blue-main: #3a34eb;
-    --blue-light: #7ea4b0;
+    --blue-light: #9bc4d0;
     --blue-purple: #6134eb;
-
+    --starry-deep: #29251d;
+    --starry-blue: #9bc4d0;
+    --starry-star: #ebd234;
     --yellow-main: #ebd234;
     --yellow-main-extra: #e2c50d;
-
+    
     --black-main: #29251d;
     --black-main-extra: #201e17;
 }
@@ -1078,4 +1080,371 @@ body {
 
 .starry-check input:checked {
     accent-color: var(--starry-star);
+}
+
+/* Login / Form */
+
+.starry-form-card {
+    background: var(--starry-deep);
+    border: 1px solid var(--starry-blue);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+}
+
+.starry-form-title {
+    margin-bottom: 25px;
+
+    color: var(--starry-star);
+
+    font-family: Georgia, "Times New Roman", serif;
+    text-align: center;
+
+    text-shadow: 0 0 8px rgba(235, 210, 52, 0.35);
+}
+
+.starry-form-card .form-label {
+    color: var(--starry-text);
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.starry-input {
+    background: var(--black-main-extra);
+    border: 1px solid var(--starry-blue);
+
+    color: var(--starry-text);
+
+    border-radius: 5px;
+}
+
+.starry-input:focus {
+    background: var(--black-main-extra);
+
+    color: var(--starry-text);
+
+    border-color: var(--starry-star);
+
+    box-shadow: 0 0 6px rgba(235, 210, 52, 0.35);
+}
+
+.starry-form-actions {
+    margin-top: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.starry-primary-btn {
+    background: var(--starry-blue);
+    border: 1px solid var(--starry-star);
+
+    color: var(--black-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    transition: 0.15s ease;
+}
+
+.starry-primary-btn:hover {
+    background: var(--starry-star);
+
+    color: var(--black-main);
+
+    box-shadow: 0 0 8px rgba(235, 210, 52, 0.6);
+}
+
+.starry-link-button {
+    color: var(--starry-text);
+
+    text-decoration: none;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    transition: 0.15s ease;
+}
+
+.starry-link-button:hover {
+    color: var(--starry-star);
+
+    text-shadow:
+        0 0 5px var(--starry-star);
+}
+
+/* 404 */
+
+.starry-404 {
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            rgba(7, 21, 47, 0.35),
+            rgba(7, 21, 47, 0.35)
+        ),
+        url("/static/images/404-witch.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    padding: 30px;
+
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.starry-404-number {
+    color: var(--starry-star);
+
+    font-size: 8rem;
+    font-weight: bold;
+
+    line-height: 0.9;
+
+    text-shadow:
+        3px 3px 0 rgba(0, 0, 0, 0.6),
+        0 0 12px rgba(235, 210, 52, 0.6);
+}
+
+.starry-404 h1 {
+    margin-top: 20px;
+
+    color: var(--starry-blue);
+
+    font-size: 2rem;
+
+    text-shadow:
+        2px 2px 3px rgba(0, 0, 0, 0.8);
+}
+
+.starry-404 p {
+    margin-top: 10px;
+
+    color: var(--starry-blue);
+
+    font-size: 1.1rem;
+
+    text-shadow:
+        2px 2px 3px rgba(0, 0, 0, 0.9);
+}
+
+.starry-404-button {
+    display: inline-block;
+
+    margin-top: 20px;
+    padding: 10px 18px;
+
+    background: var(--starry-blue);
+
+    color: var(--black-main-extra);
+
+    border: 1px solid var(--starry-star);
+    border-radius: 5px;
+
+    text-decoration: none;
+
+    transition: 0.15s ease;
+}
+
+.starry-404-button:hover {
+    background: var(--starry-star);
+
+    color: var(--black-main-extra);
+
+    box-shadow:
+        0 0 10px rgba(235, 210, 52, 0.7);
+
+    transform: scale(1.04);
+}
+
+@media (max-width: 768px) {
+
+    .starry-404-number {
+        font-size: 5rem;
+    }
+
+    .starry-404 h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* BLOG DETAIL */
+
+.starry-blog-detail {
+    padding: 25px;
+}
+
+.starry-blog-image img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+
+    border: 3px solid var(--blue-main);
+    border-radius: 8px;
+
+    box-shadow:
+        5px 5px 0 var(--black-main-extra),
+        0 0 15px rgba(235, 210, 52, 0.15);
+}
+
+.starry-blog-header {
+    padding: 20px 30px;
+}
+
+.starry-blog-header h1 {
+    color: var(--yellow-main);
+    
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 2.3rem;
+
+    margin-bottom: 15px;
+
+    text-shadow:
+        2px 2px 0 var(--black-main-extra),
+        0 0 8px rgba(235, 210, 52, 0.25);
+}
+
+.starry-blog-subtitle {
+    color: var(--blue-alternative);
+    
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 1.15rem;
+
+    line-height: 1.6;
+}
+
+.starry-blog-divider {
+    height: 2px;
+
+    margin: 30px 0;
+
+    background: var(--blue-alternative);
+
+    opacity: 0.6;
+}
+
+.starry-blog-content {
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 10px 20px 40px;
+
+    color: var(--starry-blue);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 1.05rem;
+
+    line-height: 1.8;
+}
+
+.starry-blog-content h1,
+.starry-blog-content h2,
+.starry-blog-content h3 {
+    color: var(--yellow-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.starry-blog-content a {
+    color: var(--blue-main);
+
+    text-decoration: none;
+}
+
+.starry-blog-content a:hover {
+    color: var(--yellow-main);
+}
+
+.starry-blog-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* BLOG LIST */
+
+.starry-blog-list {
+    padding: 10px 0 30px;
+}
+
+
+/* BLOG BAŞLIK */
+
+.starry-blog-list-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+
+    border-bottom: 2px solid var(--blue-alternative);
+}
+
+.starry-blog-list-header h1 {
+    margin: 0;
+
+    color: var(--yellow-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 2rem;
+
+    text-shadow:
+        2px 2px 0 var(--black-main-extra);
+}
+
+
+/* KATEGORİ ALANI */
+
+.starry-category-sidebar {
+    padding: 15px;
+
+    background: var(--black-main-extra);
+
+    border: 1px solid var(--blue-alternative);
+    border-radius: 6px;
+
+    box-shadow:
+        3px 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.starry-category-title {
+    margin-bottom: 15px;
+
+    color: var(--blue-alternative);
+
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.3rem;
+}
+
+
+/* BLOG LİSTESİ */
+
+.starry-blog-items {
+    margin-top: 10px;
+}
+
+
+/* KÜÇÜK EKRAN */
+
+@media (max-width: 768px) {
+
+    .starry-category-sidebar {
+        margin-bottom: 25px;
+    }
+
+    .starry-blog-list-header h1 {
+        font-size: 1.7rem;
+    }
+
 }

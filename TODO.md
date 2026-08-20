@@ -4,12 +4,12 @@
 - [X] Görsel olmadan blog oluşturabilsin
 - [X] Blog silinince resim dosyasını da sil
 - [X] Mevcut blogların görselleri kaldırılabilsin
-- [ ] Bootstrap yerine özgün CSS tasarla
+- [X] Bootstrap yerine özgün CSS tasarla
 - [X] İşlem mesajlarını düzenle
-- [ ] Yüklenen resmi önizleme olarak göster
-- [ ] Sadece resim uzantılarına izin ver
-- [ ] Maksimum dosya, başlık, açıklama, metin boyutu belirle
-- [ ] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
+- [X] Yüklenen resmi önizleme olarak göster
+- [X] Sadece resim uzantılarına izin ver
+- [X] Maksimum dosya, başlık, açıklama, metin boyutu belirle
+- [X] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
 - [ ] Slug çakışmalarını kontrol et
 - [ ] Resim olmadan blog oluşturulabilsin
 - [ ] Kategori olmadan blog oluşturulabilsin
