@@ -9,7 +9,7 @@
 
     <div class="container mt-3">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 category-edit-page">
                 <% if (message != undefined) { %>
                     <div class="alert alert-<%= message.class %>">
                         <%= message.text %>
@@ -19,27 +19,27 @@
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="categoryid" value="<%= (category.categoryid) ? category.categoryid : values.categoryid %>">
                     <div class="row mb-3">
-                        <label for="baslik" class="col-sm-2 col-form-label">Başlık</label>
+                        <label for="baslik" class="col-sm-2 col-form-label edit-label">Başlık</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="baslik" name="baslik" value="<%= (category.categoryname) ? category.categoryname : values.baslik  %>" >
+                            <input type="text" class="form-control starry-input" id="baslik" name="baslik" value="<%= (category.categoryname) ? category.categoryname : values.baslik  %>" >
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-sm-10 offset-sm-2">
-                            <button type="submit" class="btn btn-primary">Kaydet</button>
-                            <a href="/admin/categories" class="btn btn-secondary">İptal</a>
+                            <button type="submit" class="btn starry-button">Kaydet</button>
+                            <a href="/admin/categories" class="btn starry-button-cancel">İptal</a>
                         </div>
                     </div>
                 </form>
             </div>
-            <p>Toplam Blog Sayısı = <%= blogCount %></p>
-            <table class="table table-bordered table-striped">
+            <p class="category-blog-count">Toplam Blog Sayısı = <%= blogCount %></p>
+            <table class="blog-admin-table category-blogs-table">
                     <thead>
                         <tr>
-                            <th style="width: 75px;">id</th>
-                            <th style="width: 150px;">resim</th>
+                            <th class="col-id">id</th>
+                            <th class="col-image">resim</th>
                             <th>baslik</th>
-                            <th style="width: 200px;">işlemler</th>
+                            <th class="col-actions">işlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,22 +47,23 @@
                             <tr>
                                 <td><%= blog.blogid %></td>
                                 <td>
-                                    <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+                                    <img src="/static/images/<%= blog.resim %>" class="admin-blog-image" alt="">
                                 </td>                                
                                 <td>
-                                    <h5><%= blog.baslik %></h5>
-                                    <br>
-                                    <%= blog.altbaslik %>
+                                    <h5 class="admin-blog-title"><%= blog.baslik %></h5>
+                                    <div class="admin-blog-subtitle">
+                                        <%= blog.altbaslik %>
+                                    </div>
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.url %>">Edit</a>
+                                    <a class="admin-btn admin-btn-edit" href="/admin/blogs/<%= blog.url %>">Edit</a>
 
                                     <form style="display: inline-block;" action="/admin/categories/remove" method="post">
                                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                                         <input type="hidden" name="blogid" value="<%= blog.blogid %>">
                                         <input type="hidden" name="categoryid" value="<%= category.categoryid %>">
                                         <input type="hidden" name="categoryurl" value="<%= category.url %>">
-                                        <button type="submit" class="btn btn-sm btn-danger">Kategoriden Çıkar</button>
+                                        <button type="submit" class="admin-btn admin-btn-delete">Kategoriden Çıkar</button>
                                     </form>
                                 </td>
                             </tr>

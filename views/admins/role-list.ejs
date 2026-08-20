@@ -7,61 +7,95 @@
     
     <%- include('../partials/nav') %>
 
-    <div class="container mt3">
+    <div class="container mt-3">
         <div class="row">
-            <div class="col-md-12 mt-3">
+            <div class="col-md-12 roles-page">
 
                 <% if (roles.length === 0) { %>
-                    <div class="alert alert-info">
-                        Henüz hiç rol oluşturulmamış. İlk rolü aşağıdaki formdan ekleyebilirsiniz.
+                    <div class="starry-alert starry-alert-info">
+                        Henüz hiç rol oluşturulmamış.
+                        İlk rolü aşağıdaki formdan ekleyebilirsiniz.
                     </div>
                 <% } %>
+
                 <% if (message != undefined) { %>
                     <div class="alert alert-<%= message.class %>">
                         <%= message.text %>
                     </div>
                 <% } %>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width: 75px;">id</th>
-                            <th style="width: 150px;">rolename</th>
-                            <th>kullanıcı sayısı</th>
-                            <th style="width: 150px;">işlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% roles.forEach(role => { %>
+
+                <div class="starry-section-title">
+                    <h3>Roller</h3>
+                </div>
+
+                <div class="starry-table-wrapper">
+                    <table class="table starry-table">
+                        <thead>
                             <tr>
-                                <td><%= role.roleid %></td>
-                                <td>
-                                    <%= role.rolename %>
-                                </td>                                
-                                <td>
-                                    <%= role.user_count %>
-                                </td>
-                                <td>
-                                    <a class="btn btn-sm btn-primary" href="/admin/roles/<%= role.roleid %>">Edit</a>
-                                    <a class="btn btn-sm btn-danger" href="/admin/roles/delete/<%= role.roleid %>">Delete</a>
-                                </td>
+                                <th style="width: 75px;">ID</th>
+                                <th style="width: 150px;">Rol</th>
+                                <th>Kullanıcı Sayısı</th>
+                                <th style="width: 180px;">İşlemler</th>
                             </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-                <hr>
-                <div class="card mt-3">
-                    <div class="card-header">
+                        </thead>
+
+                        <tbody>
+                            <% roles.forEach(role => { %>
+                                <tr>
+                                    <td>
+                                        <span class="role-id">
+                                            <%= role.roleid %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <strong class="role-name">
+                                            <%= role.rolename %>
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        <%= role.user_count %>
+                                    </td>
+
+                                    <td>
+                                        <a
+                                            class="btn btn-sm starry-button"
+                                            href="/admin/roles/<%= role.roleid %>">
+                                            Edit
+                                        </a>
+
+                                        <a
+                                            class="btn btn-sm delete-confirm"
+                                            href="/admin/roles/delete/<%= role.roleid %>">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="starry-add-box">
+                    <div class="starry-add-title">
                         Yeni Rol Ekle
                     </div>
-                    <div class="card-body">
+
+                    <div class="starry-add-body">
                         <form action="/admin/roles/create" method="post">
-                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>"
+                            >
 
                             <div class="row align-items-center">
+
                                 <div class="col-md-10">
                                     <input
                                         type="text"
-                                        class="form-control"
+                                        class="form-control starry-input"
                                         name="rolename"
                                         placeholder="Rol adı"
                                         value="<%= typeof values !== 'undefined' && values ? values.rolename : '' %>"
@@ -70,10 +104,13 @@
                                 </div>
 
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn btn-success w-100">
+                                    <button
+                                        type="submit"
+                                        class="btn starry-button w-100">
                                         Rol Ekle
                                     </button>
                                 </div>
+
                             </div>
                         </form>
                     </div>

@@ -1,0 +1,1081 @@
+:root {
+    --blue-main: #3a34eb;
+    --blue-light: #7ea4b0;
+    --blue-purple: #6134eb;
+
+    --yellow-main: #ebd234;
+    --yellow-main-extra: #e2c50d;
+
+    --black-main: #29251d;
+    --black-main-extra: #201e17;
+}
+
+body {
+    background-color: var(--black-main);
+    color: var(--blue-light);
+}
+
+.starry-navbar {
+    background-color: var(--blue-main);
+
+    min-height: 55px;
+
+    border-radius: 0 0 8px 8px;
+}
+
+.starry-navbar-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 55px;
+}
+
+.starry-brand {
+    color: var(--yellow-main);
+
+    text-decoration: none;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    margin-right: 25px;
+
+    transition: color 0.2s ease;
+}
+
+
+.starry-brand:hover {
+    color: #fff0a0;
+}
+
+
+.brand-star {
+    color: var(--yellow-main);
+
+    margin-right: 5px;
+}
+
+.starry-nav {
+    display: flex;
+    align-items: center;
+
+    list-style: none;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+.starry-nav li {
+    margin-right: 5px;
+}
+
+.starry-link {
+    display: block;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    padding: 8px 10px;
+
+    transition: none;
+}
+
+.starry-link:hover {
+    color: var(--yellow-main);
+
+    transform: scale(1.08);
+
+    text-shadow:
+        0 0 4px var(--yellow-main),
+        0 0 10px rgba(235, 210, 52, 0.8),
+        0 0 18px rgba(235, 210, 52, 0.4);
+}
+
+.starry-account {
+    margin-left: auto;
+}
+
+/*KATEGORİ MENÜSÜ*/
+
+/* =========================
+   Kategori Menüsü
+   ========================= */
+
+.category-menu {
+    background-color: var(--black-main-extra);
+
+    border: 2px solid var(--blue-purple);
+
+    border-radius: 6px;
+
+    padding: 8px 0;
+}
+
+
+.category-title {
+    color: var(--blue-light);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    text-align: center;
+
+    padding: 8px 14px 10px;
+
+    border-bottom: 1px solid var(--blue-purple);
+}
+
+.category-title-first {
+    color: var(--yellow-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    text-align: center;
+
+    padding: 8px 14px 10px;
+
+    border-bottom: 1px solid var(--blue-purple);
+}
+
+.category-menu-hard {
+    background-color: var(--black-main-extra);
+
+    border: 2px solid var(--blue-purple);
+
+    border-radius: 6px;
+
+    padding: 8px 0;
+}
+
+.category-link {
+    display: block;
+
+    color: var(--blue-light);
+
+    text-decoration: none;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    padding: 8px 14px;
+
+    transition: none;
+}
+
+
+.category-link:hover {
+    color: var(--yellow-main);
+
+    padding-left: 18px;
+}
+
+
+.category-link.selected {
+    color: var(--yellow-main-extra);
+
+    background-color: var(--blue-purple);
+
+    font-weight: bold;
+}
+
+/* =========================
+   Blog Kartı
+   ========================= */
+
+.blog-card {
+    background-color: var(--black-main-extra);
+
+    border: 1px solid var(--blue-purple);
+
+    border-radius: 6px;
+
+    overflow: hidden;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+
+/* Kartın üzerine gelince */
+
+.blog-card:hover {
+    transform: scale(1.015);
+
+    border-color: var(--yellow-main);
+
+    box-shadow:
+        0 0 8px rgba(235, 210, 52, 0.5),
+        0 0 18px rgba(97, 52, 235, 0.4);
+}
+
+.blog-card-image {
+    width: 100%;
+    height: 100%;
+
+    min-height: 180px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.blog-card-body {
+    padding: 20px;
+}
+
+.blog-card-title {
+    margin-bottom: 10px;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 21px;
+}
+
+.blog-card-title a {
+    color: var(--yellow-main);
+
+    text-decoration: none;
+}
+
+.blog-card-title a:hover {
+    color: var(--yellow-main-extra);
+}
+
+.blog-card-text {
+    margin: 0;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    color: var(--blue-light);
+}
+
+.blog-card-text a {
+    color: var(--blue-light);
+
+    text-decoration: none;
+}
+
+/* =========================
+   Pagination
+   ========================= */
+
+.pagination {
+    margin-top: 25px;
+}
+
+
+/* Sayfa kutuları */
+
+.pagination .page-link {
+    background-color: var(--black-main-extra);
+
+    color: var(--blue-light);
+
+    border: 1px solid var(--blue-purple);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    padding: 7px 12px;
+
+    box-shadow: none;
+
+    border-radius: 0;
+}
+
+
+/* Üzerine gelince */
+
+.pagination .page-link:hover {
+    background-color: var(--blue-main);
+
+    color: var(--yellow-main);
+
+    border-color: var(--yellow-main);
+
+    text-shadow:
+        0 0 5px var(--yellow-main);
+
+    z-index: 2;
+}
+
+
+/* Seçili sayfa */
+
+.pagination .page-item.active .page-link {
+    background-color: var(--yellow-main);
+
+    color: var(--black-main);
+
+    border-color: var(--yellow-main);
+
+    font-weight: bold;
+
+    box-shadow:
+        0 0 7px rgba(235, 210, 52, 0.5);
+}
+
+
+/* Devre dışı İlk / Geri / İleri / Son */
+
+.pagination .page-item.disabled .page-link {
+    background-color: var(--black-main-extra);
+
+    color: #666258;
+
+    border-color: #3a3830;
+
+    opacity: 0.7;
+}
+
+/* =========================
+   Blog Edit Sayfası
+   ========================= */
+
+.blog-edit-form {
+    color: var(--blue-light);
+}
+
+
+/* Form etiketleri */
+
+.edit-label {
+    color: var(--yellow-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-weight: bold;
+}
+
+
+/* Inputlar */
+
+.starry-input {
+    background-color: var(--black-main-extra);
+
+    color: white;
+
+    border: 1px solid var(--blue-purple);
+
+    border-radius: 4px;
+}
+
+
+.starry-input:focus {
+    background-color: var(--black-main-extra);
+
+    color: white;
+
+    border-color: var(--yellow-main);
+
+    box-shadow: 0 0 5px rgba(235, 210, 52, 0.5);
+}
+
+
+/* Placeholder */
+
+.starry-input::placeholder {
+    color: var(--blue-light);
+}
+
+
+/* Resim önizleme */
+
+.edit-image-preview {
+    max-width: 250px;
+
+    border: 2px solid var(--blue-purple);
+
+    border-radius: 4px;
+
+    background-color: var(--black-main-extra);
+
+    padding: 3px;
+}
+
+
+/* Sağ seçenek alanı */
+
+.blog-edit-options {
+    color: var(--blue-light);
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+/* Bölüm başlıkları */
+
+.edit-section-title {
+    color: var(--blue-light);
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    text-align: center;
+}
+
+
+/* HR */
+
+.blog-edit-options hr {
+    border-color: var(--blue-purple);
+
+    opacity: 1;
+}
+
+
+/* Checkbox */
+
+.blog-edit-options .form-check-input {
+    background-color: var(--black-main-extra);
+
+    border: 1px solid var(--blue-light);
+}
+
+
+.blog-edit-options .form-check-input:checked {
+    background-color: var(--yellow-main);
+
+    border-color: var(--yellow-main);
+}
+
+
+.blog-edit-options .form-check-label {
+    color: var(--blue-light);
+}
+
+
+/* Kaydet */
+
+.starry-button {
+    background-color: var(--yellow-main);
+
+    color: var(--black-main);
+
+    border: 1px solid var(--yellow-main);
+
+    border-radius: 4px;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-weight: bold;
+}
+
+
+.starry-button:hover {
+    background-color: var(--yellow-main-extra);
+
+    color: var(--black-main);
+
+    border-color: var(--yellow-main-extra);
+}
+
+
+/* İptal */
+
+.starry-button-cancel {
+    background-color: var(--black-main-extra);
+
+    color: var(--blue-light);
+
+    border: 1px solid var(--blue-purple);
+
+    border-radius: 4px;
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+.starry-button-cancel:hover {
+    background-color: var(--blue-purple);
+
+    color: var(--yellow-main);
+
+    border-color: var(--yellow-main);
+}
+
+/* =========================
+   Blog Yönetim Tablosu
+   ========================= */
+
+.blog-admin-table {
+    width: 100%;
+
+    border-collapse: separate;
+    border-spacing: 0;
+
+    background-color: var(--black-main-extra);
+
+    color: var(--blue-light);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    border: 1px solid var(--blue-purple);
+}
+
+
+/* Tablo başlığı */
+
+.blog-admin-table thead {
+    background-color: var(--blue-main);
+
+    color: var(--yellow-main);
+}
+
+
+.blog-admin-table th {
+    padding: 12px 10px;
+
+    border-bottom: 2px solid var(--yellow-main);
+
+    font-weight: bold;
+}
+
+
+/* Tablo hücreleri */
+
+.blog-admin-table td {
+    padding: 10px;
+
+    border-bottom: 1px solid #39352c;
+
+    vertical-align: middle;
+}
+
+
+/* Satır hover */
+
+.blog-admin-table tbody tr:hover {
+    background-color: #28251f;
+
+    color: white;
+}
+
+
+/* Kolon genişlikleri */
+
+.blog-admin-table .col-id {
+    width: 75px;
+}
+
+.blog-admin-table .col-image {
+    width: 150px;
+}
+
+.blog-admin-table .col-actions {
+    width: 150px;
+}
+
+
+/* Blog resmi */
+
+.admin-blog-image {
+    width: 120px;
+    height: 80px;
+
+    object-fit: cover;
+
+    display: block;
+
+    border: 1px solid var(--blue-purple);
+
+    padding: 2px;
+
+    background-color: var(--black-main);
+
+    border-radius: 3px;
+}
+
+
+/* Blog başlığı */
+
+.admin-blog-title {
+    margin: 0 0 8px 0;
+
+    color: var(--yellow-main);
+
+    font-size: 18px;
+}
+
+
+/* Alt başlık */
+
+.admin-blog-subtitle {
+    color: var(--blue-light);
+
+    font-size: 14px;
+}
+
+
+/* Kategori */
+
+.admin-category {
+    display: inline-block;
+
+    background-color: var(--blue-purple);
+
+    color: var(--yellow-main);
+
+    padding: 3px 7px;
+
+    margin: 2px;
+
+    border: 1px solid var(--blue-main);
+
+    border-radius: 3px;
+
+    font-size: 13px;
+}
+
+
+/* İşlem butonları */
+
+.admin-btn {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    margin: 2px;
+
+    text-decoration: none;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    border: 1px solid;
+
+    border-radius: 3px;
+}
+
+
+/* Edit */
+
+.admin-btn-edit {
+    color: var(--yellow-main);
+
+    border-color: var(--yellow-main);
+
+    background-color: transparent;
+}
+
+
+.admin-btn-edit:hover {
+    background-color: var(--yellow-main);
+
+    color: var(--black-main);
+}
+
+
+/* Delete */
+
+.admin-btn-delete {
+    color: #cc1b1b;
+
+    border-color: #f00a0a;
+
+    background-color: transparent;
+}
+
+
+.admin-btn-delete:hover {
+    background-color: #f00a0a;
+
+    color: white;
+}
+
+/* Yeni blog - resim önizlemesi */
+
+#resimPreview {
+    display: none;
+    margin-top: 12px;
+}
+
+/* =========================
+   Blog Silme Sayfası
+   ========================= */
+
+.delete-warning {
+    background-color: var(--black-main-extra);
+
+    color: var(--blue-light);
+
+    border: 1px solid var(--yellow-main);
+
+    border-left: 4px solid var(--yellow-main);
+
+    padding: 20px;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Silinecek blog başlığı */
+
+.delete-warning b {
+    color: var(--yellow-main);
+
+    font-size: 20px;
+}
+
+
+/* Uyarı metni */
+
+.delete-warning p {
+    margin-bottom: 18px;
+}
+
+
+/* Evet */
+
+.delete-confirm {
+    background-color: #cc1b1b;
+
+    color: #f5dada;
+
+    border: 1px solid #f00a0a;
+
+    border-radius: 3px;
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+.delete-confirm:hover {
+    background-color: #f00a0a;
+
+    color: white;
+
+    border-color: var(--yellow-main);
+}
+
+
+/* Hayır */
+
+.delete-cancel {
+    background-color: var(--blue-main);
+
+    color: var(--yellow-main);
+
+    border: 1px solid var(--blue-purple);
+
+    border-radius: 3px;
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+.delete-cancel:hover {
+    background-color: var(--blue-purple);
+
+    color: var(--yellow-main);
+
+    border-color: var(--yellow-main);
+}
+
+/* =========================
+   Kategori Yönetimi
+   ========================= */
+
+.admin-page-title {
+    color: var(--yellow-main);
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 24px;
+
+    margin-bottom: 15px;
+
+    border-bottom: 1px solid var(--blue-purple);
+
+    padding-bottom: 8px;
+}
+
+
+/* Kategori tablosu */
+
+.category-admin-table td {
+    height: 50px;
+}
+
+
+/* ID */
+
+.category-admin-table .col-id {
+    width: 75px;
+}
+
+
+/* İşlemler */
+
+.category-admin-table .col-actions {
+    width: 150px;
+}
+
+
+/* Kategori adı */
+
+.category-admin-table tbody td:nth-child(2) {
+    color: var(--blue-light);
+
+    font-size: 16px;
+}
+
+
+/* Delete butonu */
+
+.category-admin-table .admin-btn-delete {
+    color: #f00a0a;
+
+    border-color: #cc1b1b;
+}
+
+
+.category-admin-table .admin-btn-delete:hover {
+    background-color: #cc1b1b;
+
+    color: white;
+
+    border-color: #f00a0a;
+}
+
+/* =========================
+   Kategori Düzenleme
+   ========================= */
+
+.category-edit-page {
+    color: var(--blue-light);
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+/* Blog sayısı */
+
+.category-blog-count {
+    margin-top: 25px;
+    margin-bottom: 10px;
+
+    padding-bottom: 8px;
+
+    color: var(--yellow-main);
+
+    font-size: 17px;
+
+    border-bottom: 1px solid var(--blue-purple);
+}
+
+
+/* Blog tablosu */
+
+.category-blogs-table {
+    margin-top: 10px;
+}
+
+
+/* Blog tablosu resimleri */
+
+.category-blogs-table .admin-blog-image {
+    width: 120px;
+    height: 80px;
+}
+
+
+/* İşlem alanı */
+
+.category-blogs-table .col-actions {
+    width: 200px;
+}
+
+
+/* Kategoriden çıkar formu */
+
+.category-blogs-table form {
+    display: inline-block;
+}
+
+/* =========================
+   Kategori Silme
+   ========================= */
+
+.category-delete-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.category-warning {
+    max-width: 700px;
+}
+
+/* =========================
+   Roller
+   ========================= */
+
+.roles-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.starry-section-title {
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(126, 164, 176, 0.4);
+}
+
+.starry-section-title h3 {
+    color: var(--starry-star);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.starry-table-wrapper {
+    overflow-x: auto;
+}
+
+.starry-table {
+    margin-bottom: 0;
+    color: var(--yellow-main-extra);
+    background: var(--black-main-extra);
+    border-color: rgba(126, 164, 176, 0.35);
+}
+
+.starry-table th {
+    color: var(--starry-star);
+    background: var(--starry-blue);
+    border-color: rgba(126, 164, 176, 0.4);
+    font-weight: normal;
+}
+
+.starry-table td {
+    color: var(--blue-light);
+    background: var(--black-main-extra);
+    border-color: rgba(126, 164, 176, 0.25);
+    vertical-align: middle;
+}
+
+.starry-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.starry-table tbody tr:hover td {
+    background: rgba(58, 52, 235, 0.18);
+}
+
+.role-id {
+    color: var(--blue-light);
+}
+
+.role-name {
+    color: var(--blue-light);
+}
+
+/* Yeni rol alanı */
+
+.starry-add-box {
+    margin-top: 25px;
+    border: 1px solid rgba(126, 164, 176, 0.4);
+    background: var(--black-main-extra);
+}
+
+.starry-add-title {
+    padding: 10px 15px;
+    color: var(--starry-star);
+    background: var(--starry-blue);
+    border-bottom: 1px solid rgba(126, 164, 176, 0.4);
+    font-weight: bold;
+}
+
+.starry-add-body {
+    padding: 18px;
+}
+
+.starry-alert-info {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    color: var(--starry-text);
+    background: rgba(126, 164, 176, 0.15);
+    border: 1px solid var(--starry-blue);
+}
+
+/* =========================
+   Rol Düzenleme
+   ========================= */
+
+.role-edit-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.starry-edit-box {
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.users-title {
+    margin-top: 25px;
+}
+
+/* =========================
+   Rol Silme
+   ========================= */
+
+.role-delete-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.role-warning {
+    max-width: 700px;
+}
+
+.users-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.user-role {
+    color: var(--starry-star);
+    font-size: 0.9rem;
+}
+
+/* =========================
+   Kullanıcı Düzenleme
+   ========================= */
+
+.user-edit-page {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+.role-checkboxes {
+    padding: 10px 0;
+}
+
+.starry-check {
+    margin-bottom: 10px;
+}
+
+.starry-check input {
+    margin-right: 8px;
+}
+
+.starry-check label {
+    color: var(--starry-text);
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.starry-check:hover label {
+    color: var(--starry-star);
+}
+
+.starry-check input:checked {
+    accent-color: var(--starry-star);
+}

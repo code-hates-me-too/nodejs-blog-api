@@ -9,27 +9,65 @@
 
     <div class="container mt-3">
         <div class="row">
-            <div class="col-md-12">
-            <% if (role.users.length > 0) { %>
+            <div class="col-md-12 role-delete-page">
 
-                <div class="alert alert-warning">
-                    Bu role atanmış kullanıcılar bulunduğu için silinemez.
-                </div>
-                <a href="/admin/roles"><button class="btn btn-primary">Geri Dön</button></a>
+                <% if (role.users.length > 0) { %>
 
-            <% } else { %>
-                <div class="alert alert-warning">
-                    <p class="mb-3">
-                        <b><%= role.rolename %></b> <br> isimli rolü silmek istiyor musunuz?
-                    </p>
-                    <form method="post">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                        <input type="hidden" name="roleid" value="<%= role.roleid %>">
-                        <button class="btn btn-danger" type="submit">Evet</button>
-                        <a href="/admin/roles" class="btn btn-primary">Hayır</a>
-                    </form>
-                </div>
-            <% } %>
+                    <div class="delete-warning role-warning">
+                        <p class="mb-3">
+                            Bu role atanmış kullanıcılar bulunduğu için
+                            <strong>silinemez.</strong>
+                        </p>
+
+                        <a
+                            href="/admin/roles"
+                            class="btn delete-cancel">
+                            Geri Dön
+                        </a>
+                    </div>
+
+                <% } else { %>
+
+                    <div class="delete-warning">
+
+                        <p class="mb-3">
+                            <b><%= role.rolename %></b>
+                            <br>
+                            isimli rolü silmek istiyor musunuz?
+                        </p>
+
+                        <form method="post">
+
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="roleid"
+                                value="<%= role.roleid %>"
+                            >
+
+                            <button
+                                class="btn delete-confirm"
+                                type="submit">
+                                Evet
+                            </button>
+
+                            <a
+                                href="/admin/roles"
+                                class="btn delete-cancel">
+                                Hayır
+                            </a>
+
+                        </form>
+
+                    </div>
+
+                <% } %>
+
             </div>
         </div>
     </div>

@@ -15,15 +15,15 @@
                         <%= message.text %>
                     </div>
                 <% } %>
-                <div class="alert alert-warning">
+                <div class="delete-warning">
                     <p class="mb-3">
                         <b><%= blog.baslik %></b> <br> isimli blogu silmek istiyor musunuz?
                     </p>
                     <form method="post">
                         <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <input type="hidden" name="blogid" value="<%= blog.blogid %>">
-                        <button class="btn btn-danger" type="submit">Evet</button>
-                        <a href="/admin/blogs" class="btn btn-primary">Hayır</a>
+                        <button class="btn delete-confirm" type="submit">Evet</button>
+                        <a href="/admin/blogs" class="btn delete-cancel">Hayır</a>
                     </form>
                 </div>
             </div>

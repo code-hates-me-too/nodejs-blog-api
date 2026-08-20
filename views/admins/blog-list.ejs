@@ -7,7 +7,7 @@
     
     <%- include('../partials/nav') %>
 
-    <div class="container mt3">
+    <div class="container mt-3">
         <div class="row">
             <div class="col-md-12 mt-3">
                 <% if (action != "undefined" && action == "delete") { %>
@@ -30,14 +30,14 @@
                         <%= message.text %>
                     </div>
                 <% } %>
-                <table class="table table-bordered table-striped">
+                <table class="blog-admin-table">
                     <thead>
                         <tr>
-                            <th style="width: 75px;">id</th>
-                            <th style="width: 150px;">resim</th>
+                            <th class="col-id">id</th>
+                            <th class="col-image">resim</th>
                             <th>baslik</th>
                             <th>kategori</th>
-                            <th style="width: 150px;">işlemler</th>
+                            <th class="col-actions">işlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,23 +45,24 @@
                             <tr>
                                 <td><%= blog.blogid %></td>
                                 <td>
-                                    <img src="/static/images/<%= blog.resim %>" class="img-fluid" alt="">
+                                    <img src="/static/images/<%= blog.resim %>" class="admin-blog-image" alt="">
                                 </td>                                
                                 <td>
-                                    <h5><%= blog.baslik %></h5>
-                                    <br>
-                                    <%= blog.altbaslik %>
+                                    <h5 class="admin-blog-title"><%= blog.baslik %></h5>
+                                    <div class="admin-blog-subtitle">
+                                        <%= blog.altbaslik %>
+                                    </div>
                                 </td>
                                 <td>
                                 <% blog.categories.forEach(category => { %>
-                                    <span class="badge bg-primary">
+                                    <span class="admin-category">
                                         <%= category.categoryname %>
                                     </span>
                                 <% }) %>
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-primary" href="/admin/blogs/<%= blog.url %>">Edit</a>
-                                    <a class="btn btn-sm btn-danger" href="/admin/blog/delete/<%= blog.url %>">Delete</a>
+                                    <a class="admin-btn admin-btn-edit" href="/admin/blogs/<%= blog.url %>">Edit</a>
+                                    <a class="admin-btn admin-btn-delete" href="/admin/blog/delete/<%= blog.url %>">Delete</a>
                                 </td>
                             </tr>
                         <% }) %>

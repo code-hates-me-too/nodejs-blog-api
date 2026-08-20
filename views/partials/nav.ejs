@@ -1,54 +1,99 @@
-<nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-    <div class="container">
-        <a href="/" class="navbar-brand">Blogapp</a>
-        <ul class="navbar-nav me-auto">
+<nav class="starry-navbar">
+    <div class="starry-navbar-inner">
 
-            <li class="nav-item">
-                <a href="/blogs" class="nav-link">| Blog Listesi</a>
+        <a href="/" class="starry-brand">
+            <span class="brand-star">★</span>
+            Blogapp
+        </a>
+
+        <ul class="starry-nav">
+
+            <li>
+                <a href="/blogs" class="starry-link">
+                    Bloglar
+                </a>
             </li>
 
-            <% if ( isAdmin || isModerator ) { %>
-            <li class="nav-item">
-                <a href="/admin/blogs" class="nav-link">| Edit Blogs</a>
-            </li>   
-            <li class="nav-item">
-                <a href="/admin/blogs/create" class="nav-link">| Add Blog</a>
-            </li>    
+            <% if (isAdmin || isModerator) { %>
+
+                <li>
+                    <a href="/admin/blogs" class="starry-link">
+                        Blog Düzenle
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/blogs/create" class="starry-link">
+                        Blog Ekle
+                    </a>
+                </li>
+
             <% } %>
+
             <% if (isAdmin) { %>
-            <li class="nav-item">
-                <a href="/admin/categories" class="nav-link">| Edit Categories</a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="/admin/categories/create" class="nav-link">| Add Category</a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/roles" class="nav-link">| Roles</a>
-            </li>
-            <li class="nav-item">
-                <a href="/admin/users" class="nav-link">| Users</a>
-            </li>
+
+                <li>
+                    <a href="/admin/categories" class="starry-link">
+                        Kategori Düzenle
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/categories/create" class="starry-link">
+                        Kategori Ekle
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/roles" class="starry-link">
+                        Roller
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/admin/users" class="starry-link">
+                        Kullanıcılar
+                    </a>
+                </li>
+
             <% } %>
-            
+
         </ul>
 
-        <ul class="navbar-nav ms-auto">
+
+        <ul class="starry-nav starry-account">
+
             <% if (isAuth) { %>
-                <li class="nav-item">
-                    <a href="/account/index" class="nav-link"><%= fullname %></a>
+
+                <li>
+                    <a href="/account/index" class="starry-link">
+                        <%= fullname %>
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/account/logout" class="nav-link">Logout</a>
+
+                <li>
+                    <a href="/account/logout" class="starry-link">
+                        Çıkış
+                    </a>
                 </li>
+
             <% } else { %>
-                <li class="nav-item">
-                    <a href="/account/login" class="nav-link">Login</a>
+
+                <li>
+                    <a href="/account/login" class="starry-link">
+                        Giriş
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/account/register" class="nav-link">Register</a>
+
+                <li>
+                    <a href="/account/register" class="starry-link">
+                        Kayıt Ol
+                    </a>
                 </li>
+
             <% } %>
+
         </ul>
+
     </div>
 </nav>

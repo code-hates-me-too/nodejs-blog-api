@@ -51,7 +51,7 @@ exports.blogs = async (req, res, next) => {
             totalItems: count,
             totalPages: Math.ceil(count / size),
             currentPage: page,
-            selectedCategory: null
+            selectedCategory: req.params.slug
         });
     } catch (err) {
         next(err);

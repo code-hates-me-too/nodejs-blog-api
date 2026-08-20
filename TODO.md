@@ -6,8 +6,8 @@
 - [X] Mevcut blogların görselleri kaldırılabilsin
 - [ ] Bootstrap yerine özgün CSS tasarla
 - [X] İşlem mesajlarını düzenle
-- [X] Yüklenen resmi önizleme olarak göster
-- [X] Sadece resim uzantılarına izin ver
+- [ ] Yüklenen resmi önizleme olarak göster
+- [ ] Sadece resim uzantılarına izin ver
 - [ ] Maksimum dosya, başlık, açıklama, metin boyutu belirle
 - [ ] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
 - [ ] Slug çakışmalarını kontrol et

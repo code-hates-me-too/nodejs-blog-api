@@ -10,70 +10,70 @@
     <div class="container mt-3">
         <form method="post" enctype="multipart/form-data" action="/admin/blogs/create?_csrf=<%= csrfToken %>">
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-10 blog-edit-form">
                     <% if (typeof message !== "undefined" && message) { %>
                         <div class="alert alert-<%= message.class %>">
                             <%= message.text %>
                         </div>
                     <% } %>
                         <div class="row mb-3">
-                            <label for="baslik" class="col-sm-1 col-form-label">Başlık</label>
+                            <label for="baslik" class="col-sm-1 col-form-label edit-label">Başlık</label>
                             <div class="col-sm-11">
-                                <input type="text" class="form-control" id="baslik" name="baslik" value="<%= (typeof values !== "undefined") ? values.baslik : "" %>">
+                                <input type="text" class="form-control starry-input" id="baslik" name="baslik" value="<%= (typeof values !== "undefined") ? values.baslik : "" %>">
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="altbaslik" class="col-sm-1 col-form-label">Alt Başlık</label>
+                            <label for="altbaslik" class="col-sm-1 col-form-label edit-label">Alt Başlık</label>
                             <div class="col-sm-11">
                             <textarea
-                                class="form-control"
+                                class="form-control starry-input"
                                 id="altbaslik"
                                 name="altbaslik"
                                 rows="2"><%= (typeof values !== "undefined") ? values.altbaslik : "" %></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="aciklama" class="col-sm-1 col-form-label">Açıklama</label>
+                            <label for="aciklama" class="col-sm-1 col-form-label edit-label">Açıklama</label>
                             <div class="col-sm-11">
                                 <textarea 
-                                class="form-control" 
+                                class="form-control starry-input" 
                                 name="aciklama" 
                                 id="editor" 
                                 rows="10"><%= (typeof values !== "undefined") ? values.aciklama : "" %></textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
-                            <label for="resim" class="col-sm-1 col-form-label">Resim</label>
+                            <label for="resim" class="col-sm-1 col-form-label edit-label">Resim</label>
 
                             <div class="col-sm-11">
-                                <input type="file" class="form-control" id="resim" name="resim" accept="image/*">
+                                <input type="file" class="form-control starry-input" id="resim" name="resim" accept="image/*">
 
                                 <div class="mt-3">
                                     <img
                                         id="resimPreview"
                                         src=""
                                         alt="Seçilen resim önizlemesi"
-                                        class="img-fluid"
-                                        style="max-width: 250px; display: none;"
+                                        class="img-fluid edit-image-preview"
+                                        style="max-width: 250px;"
                                     >
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-10 offset-sm-1">
-                                <button type="submit" class="btn btn-primary">Kaydet</button>
-                                <a href="/admin/blogs/create" class="btn btn-secondary">İptal</a>
+                                <button type="submit" class="btn starry-button">Kaydet</button>
+                                <a href="/admin/blogs/create" class="btn starry-button-cancel">İptal</a>
                             </div>
                         </div>
                     
                 </div>
-                <div class="col-md-2">
-                    <p>Seçenekler</p><hr>
+                <div class="col-md-2 blog-edit-options">
+                    <p class="edit-section-title">Seçenekler</p><hr>
                     <div class="row mb-1">
                         <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="anasayfa" name="anasayfa">
-                                <label class="form-check-label" for="anasayfa">
+                                <input class="form-check-input starry-input" type="checkbox" id="anasayfa" name="anasayfa">
+                                <label class="form-check-label edit-label" for="anasayfa">
                                     Anasayfa
                                 </label>
                             </div>
@@ -82,27 +82,27 @@
                     <div class="row mb-3">
                         <div class="col-sm-11 offset-sm-1">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="onay" name="onay">
-                                <label class="form-check-label" for="onay">
+                                <input class="form-check-input starry-input" type="checkbox" id="onay" name="onay">
+                                <label class="form-check-label edit-label" for="onay">
                                     Onay
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <br><br><p>Kategoriler</p><hr>
+                    <br><br><p class="edit-section-title">Kategoriler</p><hr>
                     <div class="row mb-3">
                         <div class="row mb-3">
                             <% categories.forEach(category => { %>
                                 <div class="col-sm-11 offset-sm-1">
                                     <div class="form-check">
                                         <input
-                                            class="form-check-input"
+                                            class="form-check-input starry-input"
                                             type="checkbox"
                                             id="cat<%= category.categoryid %>"
                                             name="categories[]"
                                             value="<%= category.categoryid %>"
                                         >
-                                        <label class="form-check-label" for="cat<%= category.categoryid %>">
+                                        <label class="form-check-label edit-label" for="cat<%= category.categoryid %>">
                                             <%= category.categoryname %>
                                         </label>
                                     </div>

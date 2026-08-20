@@ -72,7 +72,7 @@ async function populate() {
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
-        resim: "1.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
@@ -82,7 +82,7 @@ async function populate() {
         url: "express-router",
         altbaslik: "Express'te route yapısını öğrenin.",
         aciklama: "<p>Express Router büyük projelerde kod düzenini kolaylaştırır.</p>",
-        resim: "2.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
@@ -92,7 +92,7 @@ async function populate() {
         url: "sequelize-orm",
         altbaslik: "SQL sorgularını ORM ile yönetin.",
         aciklama: "<p>Sequelize sayesinde SQL yerine JavaScript kullanabilirsiniz.</p>",
-        resim: "3.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
@@ -102,7 +102,7 @@ async function populate() {
         url: "rest-api",
         altbaslik: "REST mimarisinin temelleri.",
         aciklama: "<p>REST API istemci ile sunucu arasında veri alışverişini sağlar.</p>",
-        resim: "4.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: false,
         onay: true
     });
@@ -112,7 +112,7 @@ async function populate() {
         url: "bootstrap-grid",
         altbaslik: "Responsive tasarım oluşturun.",
         aciklama: "<p>Bootstrap grid sistemi sayfa düzenini kolaylaştırır.</p>",
-        resim: "5.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
@@ -122,7 +122,7 @@ async function populate() {
         url: "yapay-zeka",
         altbaslik: "AI dünyasına kısa bir giriş.",
         aciklama: "<p>Yapay zeka günümüzde birçok alanda kullanılmaktadır.</p>",
-        resim: "6.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: false,
         onay: true
     });
@@ -132,7 +132,7 @@ async function populate() {
         url: "git-github",
         altbaslik: "Versiyon kontrol sistemlerini öğrenin.",
         aciklama: "<p>Git yazılım geliştirme süreçlerinde vazgeçilmezdir.</p>",
-        resim: "7.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
@@ -142,7 +142,7 @@ async function populate() {
         url: "frontend-roadmap",
         altbaslik: "Frontend geliştirici olmak için gerekenler.",
         aciklama: "<p>HTML, CSS ve JavaScript frontend'in temelidir.</p>",
-        resim: "8.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: false,
         onay: true
     });
@@ -152,7 +152,7 @@ async function populate() {
         url: "kariyer-tavsiyeleri",
         altbaslik: "İlk işinizi bulmanıza yardımcı olacak öneriler.",
         aciklama: "<p>Portföy oluşturmak ve GitHub kullanmak kariyeriniz için önemlidir.</p>",
-        resim: "9.jpg",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
         anasayfa: true,
         onay: true
     });
