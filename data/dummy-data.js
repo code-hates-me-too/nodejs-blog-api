@@ -157,6 +157,107 @@ async function populate() {
         onay: true
     });
 
+    const blog10 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog11 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog12 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog13 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog14 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog15 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog16 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog17 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog18 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog19 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    const blog20 = await Blog.create({
+        baslik: "Node.js'e Giriş",
+        url: "nodejs-giris",
+        altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
+        aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
+        resim: "pexels-pawelkalisinski-1076758-1787040417578.jpg",
+        anasayfa: true,
+        onay: true
+    });
+    
+
 
     await blog1.addCategories([yazilim, web]);
     await blog2.addCategories([yazilim, web]);
@@ -167,6 +268,18 @@ async function populate() {
     await blog7.addCategories([yazilim, kariyer]);
     await blog8.addCategories([web, kariyer]);
     await blog9.addCategories([kariyer]);
+    await blog10.addCategories([yazilim, web]);
+    await blog11.addCategories([yazilim, web]);
+    await blog12.addCategories([yazilim, web]);
+    await blog13.addCategories([yazilim, web]);
+    await blog14.addCategories([yazilim, web]);
+    await blog15.addCategories([yazilim, web]);
+    await blog16.addCategories([yazilim, web]);
+    await blog17.addCategories([yazilim, web]);
+    await blog18.addCategories([yazilim, web]);
+    await blog19.addCategories([yazilim, web]);
+    await blog20.addCategories([yazilim, web]);
+
 
     await adminUser.addBlogs([blog1, blog2, blog3, blog4]);
     await normalUser.addBlogs([blog5, blog6, blog7, blog8, blog9]);

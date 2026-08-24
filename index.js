@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const sequelize = require("./data/db");
+const cors = require("cors");
 const locals = require("./middlewares/locals");
 const csurf = require("csurf");
 const cookieParser = require("cookie-parser");
@@ -17,6 +18,7 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 const app = express();
 
+app.use(cors());
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
