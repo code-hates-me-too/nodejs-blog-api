@@ -46,10 +46,7 @@ const User = sequelize.define("user", {
             notEmpty: {
                 msg: "Parola boş geçilemez"
             },
-            len: {
-                args: [7, 25],
-                msg: "Parola en az 7 karakter olmalıdır."
-            }
+            
         }
     },
     resetToken: {

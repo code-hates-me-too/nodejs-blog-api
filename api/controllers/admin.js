@@ -213,7 +213,8 @@ exports.blog_delete_delete = async (req, res, next) => {
     const blogid = req.params.id;
     const userid = req.user.userid;
     try {
-        const isAdmin = req.user.roles.includes("admin");
+        const roles = req.user.roles || [];
+        const isAdmin = roles.includes("admin");
         
         const blog = await Blog.findOne({
             where: isAdmin
@@ -378,11 +379,16 @@ exports.blog_edit_put = async (req, res, next) => {
         aciklama,
         anasayfa,
         onay,
-        categories
+        categories,
+        eskiResim,
+        resimKaldir
     } = req.body;
     const userid = req.user.userid;
     const roles = req.user.roles || [];
-    const resim = req.file ? req.file.filename : req.body.eskiResim;
+
+    const resim = req.file
+        ? req.file.filename
+        : eskiResim;
 
     let t;
     let blog; 
@@ -413,14 +419,18 @@ exports.blog_edit_put = async (req, res, next) => {
         blog.altbaslik = altbaslik;
         blog.aciklama = aciklama;
         blog.resim = resim;
-        if (resimKaldir) { 
-            if (!req.file) { 
-                blog.resim = null; 
- 
-                fs.unlink("./public/images/" + req.body.eskiResim, err => { 
-                    if (err) console.log(err); 
-                }); 
-            } 
+        if (resimKaldir === "true" && !req.file) {
+
+            blog.resim = null;
+
+            if (eskiResim) {
+                fs.unlink(
+                    "./public/images/" + eskiResim,
+                    err => {
+                        if (err) console.log(err);
+                    }
+                );
+            }
         }
         blog.anasayfa = anasayfa === "true" || anasayfa === "1";
         blog.onay = onay === "true" || onay === "1";

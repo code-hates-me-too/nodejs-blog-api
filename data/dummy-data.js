@@ -32,6 +32,8 @@ async function populate() {
         rolename: "moderator"
     });
 
+    
+
     // Rol ilişkileri
     await adminUser.addRoles([adminRole, userRole]);
     await normalUser.addRole(userRole);
@@ -158,7 +160,7 @@ async function populate() {
     });
 
     const blog10 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'aaae Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -167,7 +169,7 @@ async function populate() {
         onay: true
     });
     const blog11 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Nodaaae.js'e Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -176,7 +178,7 @@ async function populate() {
         onay: true
     });
     const blog12 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'e Giraaaaiş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -185,7 +187,7 @@ async function populate() {
         onay: true
     });
     const blog13 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'e Girişaaa",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -194,7 +196,7 @@ async function populate() {
         onay: true
     });
     const blog14 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "aaaNode.js'e Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -203,7 +205,7 @@ async function populate() {
         onay: true
     });
     const blog15 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Nodaaaaaae.js'e Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -212,7 +214,7 @@ async function populate() {
         onay: true
     });
     const blog16 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Naaaaode.js'e Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -221,7 +223,7 @@ async function populate() {
         onay: true
     });
     const blog17 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'e Giraaaaaiş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -230,7 +232,7 @@ async function populate() {
         onay: true
     });
     const blog18 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'e aaaaaGiriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -239,7 +241,7 @@ async function populate() {
         onay: true
     });
     const blog19 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Naaaaaaode.js'e Giriş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",
@@ -248,7 +250,7 @@ async function populate() {
         onay: true
     });
     const blog20 = await Blog.create({
-        baslik: "Node.js'e Giriş",
+        baslik: "Node.js'e Giraaaaaaiş",
         url: "nodejs-giris",
         altbaslik: "Node.js ile ilk uygulamanızı oluşturun.",
         aciklama: "<p>Node.js sunucu tarafında JavaScript çalıştırmayı sağlar.</p>",

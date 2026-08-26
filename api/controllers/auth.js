@@ -1,8 +1,13 @@
-const User = require("../../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const emailService = require("../../helpers/send-mail");
 const config = require("../../config");
+const User = require("../../models/user");
+const Role = require("../../models/role");
+const Blog = require("../../models/blog");
+const Category = require("../../models/category");
+const crypto = require("crypto");
+const { Op } = require("sequelize");
 
 exports.register_post = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -13,6 +18,18 @@ exports.register_post = async (req, res, next) => {
             email: email,
             password: password
         });
+
+        const defaultRole = await Role.findOne({
+            where: {
+                rolename: "user"
+            }
+        });
+
+        if (!defaultRole) {
+            throw new Error("Varsayılan user rolü bulunamadı.");
+        }
+
+        await newUser.addRole(defaultRole);
 
         emailService.sendMail({
             from: config.email.from,
@@ -25,6 +42,7 @@ exports.register_post = async (req, res, next) => {
             attributes: ["rolename"],
             raw: true
         });
+
         const roles = userRoles.map(role => role.rolename);
 
         const token = jwt.sign(
@@ -51,14 +69,20 @@ exports.register_post = async (req, res, next) => {
         });
 
     } catch (err) {
-        if (err.name === "SequelizeValidationError" || err.name === "SequelizeUniqueConstraintError") {
+    
+        if (
+            err.name === "SequelizeValidationError" ||
+            err.name === "SequelizeUniqueConstraintError"
+        ) {
             const errors = err.errors.map(e => e.message);
+
             return res.status(400).json({
                 success: false,
                 message: "Kayıt başarısız.",
                 errors: errors
             });
         }
+
         next(err);
     }
 };
@@ -122,7 +146,7 @@ exports.login_post = async (req, res, next) => {
         });
 
     } catch (err) {
-        console.log("LLLLLLLLLLLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANNNNNNNNNNNNNNNNNNNNNNn");
+        next(err);
     }
 };
 
@@ -152,7 +176,7 @@ exports.reset_post = async (req, res, next) => {
         }
 
         user.resetToken = token;
-        user.resetTokenExpiration = Date.now() + (1000*60*60);
+        user.resetTokenExpiration = new Date (Date.now() + (1000*60*60));
         await user.save();
 
         await emailService.sendMail({
@@ -162,7 +186,7 @@ exports.reset_post = async (req, res, next) => {
             html: `
                 <p>Parolarınızı güncellemek için aşağıdaki linke tıklayın</p>
                 <p>
-                    <a href="http://localhost:3000/account/new-password/${token}">Parola Sıfırla</a>
+                    <a href="${process.env.CLIENT_URL_REACT}/account/new-password/${token}">Parola Sıfırla</a>
                 </p>
             `
         });

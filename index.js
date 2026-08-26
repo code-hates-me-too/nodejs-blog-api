@@ -95,7 +95,7 @@ User.belongsToMany(Role, {
 
     // await sequelize.sync({ force: true });
 
-    // // await seedRoles();
+    // // // await seedRoles();
     
     // await dummyData();
 })();

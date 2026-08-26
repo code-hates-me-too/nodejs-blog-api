@@ -5,6 +5,8 @@ const config = require("../config");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
 const Role = require("../models/role");
+const getErrorMessage = require("../helpers/error-message");
+
 
 exports.register_get = async (req, res, next) => {
     try {
@@ -47,7 +49,7 @@ exports.register_post = async (req, res, next) => {
             text: "Hesabınıza giriş yapabilirsiniz",
             class: "success"
         };
-
+        
         return req.session.save(err => {if (err) {console.log(err);} return res.redirect("login");});
     } catch (err) {
         if(err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
