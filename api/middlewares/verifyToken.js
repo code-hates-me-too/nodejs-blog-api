@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../../models/user");
 
 module.exports = function verifyToken(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -12,21 +13,31 @@ module.exports = function verifyToken(req, res, next) {
 
     const token = authHeader.split(" ")[1];
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
-            if (err.name === "TokenExpiredError") {
-                return res.status(401).json({
-                    success: false,
-                    message: "Oturum süresi dolmuş, lütfen tekrar giriş yapın."
-                });
-            }
-            return res.status(401).json({
-                success: false,
-                message: "Geçersiz token."
-            });
+            const message = err.name === "TokenExpiredError"
+                ? "Oturum süresi dolmuş, lütfen tekrar giriş yapın."
+                : "Geçersiz token.";
+            return res.status(401).json({ success: false, message });
         }
 
-        req.user = decoded; // { userid, fullname, email, roles }
-        next();
+        try {
+            const currentUser = await User.findByPk(decoded.userid, {
+                attributes: ["tokenVersion"]
+            });
+
+            if (!currentUser || currentUser.tokenVersion !== decoded.tokenVersion) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Yetkileriniz değişti, lütfen tekrar giriş yapın."
+                });
+            }
+
+            req.user = decoded; // { userid, fullname, email, roles, tokenVersion }
+            next();
+
+        } catch (dbErr) {
+            next(dbErr);
+        }
     });
 };

@@ -6,6 +6,7 @@ const User = require("../../models/user");
 const { Op } = require("sequelize");
 const sequelize = require("../../data/db");
 const slugField = require("../../helpers/slugfield");
+const SYSTEM_ROLE_SLUGS = require("../../helpers/systemRoles");
 
 exports.categories_delete_delete = async (req, res, next) => {
     const { id } = req.params;
@@ -126,9 +127,6 @@ exports.categories_edit_get = async (req, res, next) => {
                 message: "Kategori bulunamadı."
             });
         }
-
-        const blogs = await category.getBlogs();
-        const blogCount = await category.countBlogs();
         
         return res.status(200).json({
             success: true,
@@ -198,7 +196,29 @@ exports.categories_get = async (req, res, next) => {
     const message = req.session.message || null;
     req.session.message = null; 
     try {
-        const categories = await Category.findAll();
+        const categories = await Category.findAll({
+            attributes: {
+                include: [
+                    [
+                        sequelize.fn(
+                            "COUNT",
+                            sequelize.col("blogs.blogid")
+                        ),
+                        "blog_count"
+                    ]
+                ]
+            },
+            include: [
+                {
+                    model: Blog,
+                    attributes: [],
+                    through: {
+                        attributes: []
+                    }
+                }
+            ],
+            group: ["category.categoryid"]
+        });
         return res.status(200).json({
             success: true,
             count: categories.length,
@@ -688,9 +708,14 @@ exports.roles_get = async (req, res, next) => {
             includeIgnoreAttributes: false
         });
 
+        const rolesWithFlag = roles.map(role => ({
+            ...role,
+            isSystemRole: SYSTEM_ROLE_SLUGS.includes(role.slug)
+        }));
+
         return res.status(200).json({
             success: true,
-            data: roles
+            data: rolesWithFlag
         });
 
     } catch (err) {
@@ -725,6 +750,7 @@ exports.role_edit_get = async (req, res, next) => {
                     roleid: role.roleid,
                     rolename: role.rolename
                 },
+                isSystemRole: SYSTEM_ROLE_SLUGS.includes(role.slug),
                 users: users
             }
         });
@@ -749,6 +775,14 @@ exports.role_edit_put = async (req, res, next) => {
                 message: "Aranan rol bulunamadı."
             });
         }
+
+        if (SYSTEM_ROLE_SLUGS.includes(role.slug)) {
+            return res.status(403).json({
+                success: false,
+                message: "Yerleşik roller düzenlenemez."
+            });
+        }
+
         role.rolename = rolename;
         await role.save();
 
@@ -819,6 +853,8 @@ exports.roles_create_post = async (req, res, next) => {
 
 exports.role_remove_delete = async (req, res, next) => {
     const { roleid, userid } = req.body;
+    const currentUserId = req.user.userid; // verifyToken middleware'inden geliyor
+
     try {
         const user = await User.findByPk(userid);
 
@@ -838,7 +874,20 @@ exports.role_remove_delete = async (req, res, next) => {
             });
         }
 
+        // Admin, kendi admin rolünü kendinden kaldıramaz (self-lockout koruması)
+        if (role.slug === "admin" && String(userid) === String(currentUserId)) {
+            return res.status(403).json({
+                success: false,
+                message: "Kendi admin rolünüzü kendinizden kaldıramazsınız."
+            });
+        }
+
         await user.removeRole(role);
+
+        // Etkilenen kullanıcının mevcut token/session'ı artık eski rolleri
+        // taşıyor olacağı için, tokenVersion'ı artırıyoruz. Bir sonraki
+        // istekte verifyToken/isAuth bunu yakalayıp yeniden login isteyecek.
+        await user.increment("tokenVersion");
 
         return res.status(200).json({
             success: true,
@@ -864,6 +913,13 @@ exports.roles_delete_delete = async (req, res, next) => {
             return res.status(404).json({
                 success: false,
                 message: "Rol bulunamadı."
+            });
+        }
+
+        if (SYSTEM_ROLE_SLUGS.includes(role.slug)) {
+            return res.status(403).json({
+                success: false,
+                message: "Yerleşik roller silinemez."
             });
         }
 

@@ -57,6 +57,11 @@ const User = sequelize.define("user", {
         type: DataTypes.DATE,
         allowNull: true
     },
+    tokenVersion: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    }
 }, {
     timestamps: true
 });

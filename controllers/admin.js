@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 const sequelize = require("../data/db");
 const slugField = require("../helpers/slugfield");
 const getErrorMessage = require("../helpers/error-message");
+const SYSTEM_ROLE_SLUGS = require("../helpers/systemRoles");
 
 exports.get_categories_remove = async (req, res, next) => {
     const blogid = req.body.blogid;
@@ -658,8 +659,11 @@ exports.roles_get = async (req, res, next) => {
 exports.roles_create_post = async (req, res, next) => {
     const rolename = req.body.rolename;
     try {
+        const slug = slugField(rolename);
+
         await Role.create({
-            rolename: rolename
+            rolename: rolename,
+            slug: slug
         });
 
         req.session.message = {
@@ -712,8 +716,30 @@ exports.roles_delete_get = async (req, res, next) => {
             }
         });
 
+        if (!role) {
+            req.session.message = {
+                text: "Rol bulunamadı.",
+                class: "warning"
+            };
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles");
+            });
+        }
+
+        if (SYSTEM_ROLE_SLUGS.includes(role.slug)) {
+            req.session.message = {
+                text: "Yerleşik roller silinemez.",
+                class: "warning"
+            };
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles");
+            });
+        }
+
         return res.render("admins/role-delete", {
-            title: "Delete" + role.rolename,
+            title: "Delete " + role.rolename,
             role: role
         });
     } catch (err) {
@@ -730,6 +756,13 @@ exports.roles_delete_post = async (req, res, next) => {
 
         if (!role) {
             return res.status(404).send("Rol bulunamadı.");
+        }
+
+        if (SYSTEM_ROLE_SLUGS.includes(role.slug)) {
+            return res.status(403).json({
+                success: false,
+                message: "Sistem rolleri silinemez."
+            });
         }
 
         if (role.users.length > 0) {
@@ -762,15 +795,59 @@ exports.roles_delete_post = async (req, res, next) => {
 
 exports.role_remove_post = async (req, res, next) => {
     const roleid = req.body.roleid;
-    const rolename = req.body.rolename;
     const userid = req.body.userid;
+    const currentUserId = req.session.userid;
+
     try {
         const user = await User.findByPk(userid);
         const role = await Role.findByPk(roleid);
 
+        if (!user || !role) {
+            req.session.message = {
+                text: "Kullanıcı veya rol bulunamadı.",
+                class: "warning"
+            };
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles/" + roleid);
+            });
+        }
+
+        // Admin, kendi admin rolünü kendinden kaldıramaz (self-lockout koruması)
+        if (role.slug === "admin" && String(userid) === String(currentUserId)) {
+            req.session.message = {
+                text: "Kendi admin rolünüzü kendinizden kaldıramazsınız.",
+                class: "danger"
+            };
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles/" + roleid);
+            });
+        }
+
         await user.removeRole(role);
 
-        return res.redirect("/admin/roles/" + req.body.roleid);
+        // İşlemi yapan kişi kendi rolünü değiştiriyorsa,
+        // session'daki roles bilgisini anında tazele — yoksa
+        // sonraki isteklerde eski (silinen) rol hâlâ geçerliymiş gibi davranır.
+        if (String(userid) === String(currentUserId)) {
+            const updatedRoles = await user.getRoles({
+                attributes: ["rolename"],
+                raw: true
+            });
+            req.session.roles = updatedRoles.map(r => r.rolename);
+        }
+
+        req.session.message = {
+            text: "Rol kullanıcıdan kaldırıldı.",
+            class: "success"
+        };
+
+        return req.session.save(err => {
+            if (err) console.log(err);
+            return res.redirect("/admin/roles/" + roleid);
+        });
+
     } catch (err) {
         next(err);
     }
@@ -779,31 +856,34 @@ exports.role_remove_post = async (req, res, next) => {
 exports.role_edit_get = async (req, res, next) => {
     const roleid = req.params.roleid;
     const message = req.session.message || null;
-    req.session.message = null; 
+    req.session.message = null;
     try {
         const role = await Role.findOne({
             where: {
                 roleid: roleid
             }
         });
-        const users = await role.getUsers();
 
-        if(role) {
-            return res.render("admins/role-edit", {
-                title: role.rolename + " Edit",
-                role: role,
-                users: users,
-                message: message
+        if (!role) {
+            req.session.message = {
+                text: "Aranan rol bulunamadı",
+                class: "warning"
+            };
+            return req.session.save(err => {
+                if (err) console.log(err);
+                return res.redirect("/admin/roles");
             });
         }
-        req.session.message = {
-            text: "Aranan rol bulunamadı",
-            class: "warning"
-        };
 
-        return req.session.save(err => {
-            if (err) console.log(err);
-            return res.redirect("/admin/roles");
+        const users = await role.getUsers();
+        const isSystemRole = SYSTEM_ROLE_SLUGS.includes(role.slug);
+
+        return res.render("admins/role-edit", {
+            title: role.rolename + " Edit",
+            role: role,
+            users: users,
+            isSystemRole: isSystemRole,
+            message: message
         });
 
     } catch (err) {
@@ -812,51 +892,117 @@ exports.role_edit_get = async (req, res, next) => {
 };
 
 exports.role_edit_post = async (req, res, next) => {
+
     const roleid = req.body.roleid;
     const rolename = req.body.rolename;
+
     try {
-        await Role.update(
-            {
-                rolename: rolename
-            },
-            {
-                where: {
-                    roleid: roleid
-                }
-            }
-        );
+
+        const role = await Role.findByPk(roleid);
+
+        if (!role) {
+
+            req.session.message = {
+                text: "Aranan rol bulunamadı.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+
+                if (err) console.log(err);
+
+                return res.redirect("/admin/roles");
+
+            });
+
+        }
+
+
+        /*
+         * Yerleşik roller değiştirilemez.
+         */
+        if (SYSTEM_ROLE_SLUGS.includes(role.slug)) {
+
+            req.session.message = {
+                text: "Yerleşik roller düzenlenemez.",
+                class: "warning"
+            };
+
+            return req.session.save(err => {
+
+                if (err) console.log(err);
+
+                return res.redirect("/admin/roles");
+
+            });
+
+        }
+
+
+        role.rolename = rolename;
+
+        await role.save();
+
+
         req.session.message = {
-            text: "Rol düzenlendi",
+            text: "Rol düzenlendi.",
             class: "success"
         };
 
+
         return req.session.save(err => {
+
             if (err) console.log(err);
+
             return res.redirect("/admin/roles");
+
         });
 
+
     } catch (err) {
-         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+
+        if (
+            err.name === "SequelizeValidationError" ||
+            err.name === "SequelizeUniqueConstraintError"
+        ) {
+
             const msg = getErrorMessage(err);
 
             const role = await Role.findOne({
                 where: {
-                  roleid: roleid
+                    roleid: roleid
                 }
             });
+
             const users = await role.getUsers();
 
+
             return res.render("admins/role-edit", {
-                title: role.rolename + "Edit",
+
+                title: role.rolename + " Edit",
+
                 role: role,
+
                 users: users,
-                message: { text: msg, class: "danger"},
-                values: { rolename: rolename }
+
+                message: {
+                    text: msg,
+                    class: "danger"
+                },
+
+                values: {
+                    rolename: rolename
+                }
+
             });
+
         }
 
+
         next(err);
+
     }
+
 };
 
 exports.users_get = async (req, res, next) => {

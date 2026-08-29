@@ -18,6 +18,11 @@
                     </div>
                 <% } %>
 
+                <% if (isSystemRole) { %>
+                    <div class="alert alert-warning">Bu yerleşik bir rol, adı değiştirilemez.</div>
+                    <!-- input'u disabled bırak ya da hiç gösterme, ama kullanıcı listesi/kaldırma butonları görünsün -->
+                <% } %>
+
                 <!-- Rol düzenleme -->
 
                 <div class="starry-edit-box">

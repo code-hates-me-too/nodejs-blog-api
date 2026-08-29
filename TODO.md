@@ -11,17 +11,19 @@
 - [X] Maksimum dosya, başlık, açıklama, metin boyutu belirle
 - [X] Kategori ve bloglar arasındaki ilişkiyi ManyToMany yap
 - [ ] Slug çakışmalarını kontrol et
-- [ ] Resim olmadan blog oluşturulabilsin
-- [ ] Kategori olmadan blog oluşturulabilsin
+- [X] Resim olmadan blog oluşturulabilsin
+- [X] Kategori olmadan blog oluşturulabilsin
 - [ ] Admin blog paneline pagination ekle 
-- [ ] Role edit sayfasındaki delete butonunu çalıştır
+- [X] Role edit sayfasındaki delete butonunu çalıştır
 - [ ] User edit sayfasındaki delete butonunu çalıştır (pasifleştirmede olabilir)
 - [ ] Kullanıcılara kendi bilgilerini güncelleme imkanı ver
 - [ ] Email doğrulaması ve parolayı iki kez yazma kontrolü ekle
-- [ ] Kodlarda temizlik yap
-- [ ] Default member rolü ve bunu kimin oluşturacağı sorusu
-- [ ] API blogs sayfası için pagination ve diğer api düzeltmeleri
-- [ ] API ve normal route linklerini derle
+- [X] Kodlarda temizlik yap
+- [X] Default member rolü ve bunu kimin oluşturacağı sorusu
+- [X] API blogs sayfası için pagination ve diğer api düzeltmeleri
+- [X] API ve normal route linklerini derle
 - [ ] Admin son rolünü ve kendi rolünü kaldıramasın
-- [ ] Register hata sayfasında direkt next'e düşüyor
+- [X] Register hata sayfasında direkt next'e düşüyor
+- [ ] admin slugını models hookuna taşı, admin ve diğer rollerin yönetimini yap. adminin nicki değiştirilemesin. 
+- [ ] tekrar eden kodları optimize et
 - [ ] 

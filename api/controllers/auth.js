@@ -36,7 +36,7 @@ exports.register_post = async (req, res, next) => {
             to: newUser.email,
             subject: "Hesabınız Oluşturuldu",
             text: "Hesabınız başarıyla oluşturuldu"
-        });
+        }).catch(err => console.log(err));
 
         const userRoles = await newUser.getRoles({
             attributes: ["rolename"],
@@ -50,7 +50,8 @@ exports.register_post = async (req, res, next) => {
                 userid: newUser.userid,
                 fullname: newUser.fullname,
                 email: newUser.email,
-                roles: roles
+                roles: roles,
+                tokenVersion: newUser.tokenVersion
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
@@ -127,7 +128,8 @@ exports.login_post = async (req, res, next) => {
                 userid: user.userid,
                 fullname: user.fullname,
                 email: user.email,
-                roles: roles
+                roles: roles,
+                tokenVersion: user.tokenVersion
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
@@ -263,6 +265,7 @@ exports.newpassword_post = async (req, res, next) => {
         user.password = password;
         user.resetToken = null;
         user.resetTokenExpiration = null;
+        user.tokenVersion += 1;   // <- eklendi: mevcut tüm JWT'ler geçersiz olur
 
         await user.save();
 
@@ -270,14 +273,13 @@ exports.newpassword_post = async (req, res, next) => {
             success: true,
             message: "Parolanız başarıyla güncellendi."
         });
-        
+
     } catch(err) {
         if (
             err.name == "SequelizeValidationError" ||
             err.name == "SequelizeUniqueConstraintError"
         ) {
             const errors = err.errors.map(e => e.message);
-
             return res.status(400).json({
                 success: false,
                 message: "Parola güncellenemedi.",

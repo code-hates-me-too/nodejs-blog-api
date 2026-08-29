@@ -149,6 +149,7 @@ exports.login_post = async (req, res, next) => {
         req.session.isAuth = true;
         req.session.fullname = user.fullname;
         req.session.userid = user.userid;
+        req.session.tokenVersion = user.tokenVersion;
 
         const url = req.query.returnUrl || "/";
         return req.session.save(err => {
@@ -291,25 +292,21 @@ exports.newpassword_post = async (req, res, next) => {
         const user = await User.findOne({
             where: {
                 resetToken: token,
-                resetTokenExpiration: {
-                    [Op.gt]: Date.now()
-                },
+                resetTokenExpiration: { [Op.gt]: Date.now() },
                 userid: userid
             }
         });
 
-      
         if (!user) {
             req.session.message = {
                 text: "Parola sıfırlama bağlantısı geçersiz veya süresi dolmuş.",
                 class: "danger"
             };
-
             return req.session.save(err => {
                 if (err) return next(err);
                 return res.redirect("/account/reset-password");
             });
-        } 
+        }
 
         if (!newPassword || newPassword.length < 7 || newPassword.length > 24) {
             return res.render("auth/new-password", {
@@ -326,36 +323,27 @@ exports.newpassword_post = async (req, res, next) => {
         user.password = newPassword;
         user.resetToken = null;
         user.resetTokenExpiration = null;
+        user.tokenVersion += 1;   // <- eklendi: parola değişince eski oturumlar geçersiz olsun
         await user.save();
 
-        req.session.message = {text: "Parolanız güncellendi", class: "success"};
+        req.session.message = { text: "Parolanız güncellendi", class: "success" };
         return req.session.save(err => {
-            if (err) {
-                console.log("Session kaydedilirken hata:", err);
-            }
-
+            if (err) console.log("Session kaydedilirken hata:", err);
             return res.redirect("/account/login");
         });
-        
-    } catch(err) {
-        if (
-            err.name == "SequelizeValidationError" ||
-            err.name == "SequelizeUniqueConstraintError"
-        ) {
 
-            const msg = getErrorMessage(err);
-
+    } catch (err) {
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            let msg = "";
+            for (let e of err.errors) msg += e.message + " ";
             return res.render("auth/new-password", {
                 title: "Yeni Parola",
-                message: {
-                    text: msg,
-                    class: "danger"
-                },
+                message: { text: msg, class: "danger" },
                 token,
                 userid
             });
-
         }
+        console.log(err);
         next(err);
     }
 };
