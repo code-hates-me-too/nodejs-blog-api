@@ -8,6 +8,7 @@ const sequelize = require("../data/db");
 const slugField = require("../helpers/slugfield");
 const getErrorMessage = require("../helpers/error-message");
 const SYSTEM_ROLE_SLUGS = require("../helpers/systemRoles");
+const { addRoleToUser, removeRoleFromUser } = require("../services/roleService");
 
 exports.get_categories_remove = async (req, res, next) => {
     const blogid = req.body.blogid;
@@ -799,43 +800,18 @@ exports.role_remove_post = async (req, res, next) => {
     const currentUserId = req.session.userid;
 
     try {
-        const user = await User.findByPk(userid);
-        const role = await Role.findByPk(roleid);
+        await removeRoleFromUser(userid, roleid, currentUserId);
 
-        if (!user || !role) {
-            req.session.message = {
-                text: "Kullanıcı veya rol bulunamadı.",
-                class: "warning"
-            };
-            return req.session.save(err => {
-                if (err) console.log(err);
-                return res.redirect("/admin/roles/" + roleid);
-            });
-        }
-
-        // Admin, kendi admin rolünü kendinden kaldıramaz (self-lockout koruması)
-        if (role.slug === "admin" && String(userid) === String(currentUserId)) {
-            req.session.message = {
-                text: "Kendi admin rolünüzü kendinizden kaldıramazsınız.",
-                class: "danger"
-            };
-            return req.session.save(err => {
-                if (err) console.log(err);
-                return res.redirect("/admin/roles/" + roleid);
-            });
-        }
-
-        await user.removeRole(role);
-
-        // İşlemi yapan kişi kendi rolünü değiştiriyorsa,
-        // session'daki roles bilgisini anında tazele — yoksa
-        // sonraki isteklerde eski (silinen) rol hâlâ geçerliymiş gibi davranır.
+        // Kendi kendine yapılan değişiklikse session'ı da tazele,
+        // yoksa aynı istek içinde eski roller kullanılmaya devam eder.
         if (String(userid) === String(currentUserId)) {
+            const user = await User.findByPk(userid);
             const updatedRoles = await user.getRoles({
                 attributes: ["rolename"],
                 raw: true
             });
             req.session.roles = updatedRoles.map(r => r.rolename);
+            req.session.tokenVersion = user.tokenVersion;
         }
 
         req.session.message = {
@@ -849,6 +825,16 @@ exports.role_remove_post = async (req, res, next) => {
         });
 
     } catch (err) {
+        if (err.statusCode) {
+            req.session.message = {
+                text: err.message,
+                class: err.statusCode === 403 ? "danger" : "warning"
+            };
+            return req.session.save(saveErr => {
+                if (saveErr) console.log(saveErr);
+                return res.redirect("/admin/roles/" + roleid);
+            });
+        }
         next(err);
     }
 };

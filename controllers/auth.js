@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const { Op } = require("sequelize");
 const Role = require("../models/role");
 const getErrorMessage = require("../helpers/error-message");
+const { addRoleToUser, removeRoleFromUser } = require("../services/roleService");
 
 
 exports.register_get = async (req, res, next) => {
@@ -37,13 +38,11 @@ exports.register_post = async (req, res, next) => {
             text: "Hesabınız başarıyla oluşturuldu"
         });
 
-        const defaultRole = await Role.findOne({
-            where: {
-                rolename: "user"
-            }
-        });
-
-        await newUser.addRole(defaultRole);
+        const defaultRole = await Role.findOne({ where: { rolename: "user" } });
+        if (!defaultRole) {
+            throw new Error("Varsayılan user rolü bulunamadı.");
+        }
+        await addRoleToUser(newUser.userid, defaultRole.roleid);
 
         req.session.message = {
             text: "Hesabınıza giriş yapabilirsiniz",

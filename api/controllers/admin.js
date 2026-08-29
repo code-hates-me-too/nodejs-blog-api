@@ -7,6 +7,8 @@ const { Op } = require("sequelize");
 const sequelize = require("../../data/db");
 const slugField = require("../../helpers/slugfield");
 const SYSTEM_ROLE_SLUGS = require("../../helpers/systemRoles");
+const { addRoleToUser, removeRoleFromUser } = require("../../services/roleService");
+const { setUserRoles } = require("../../services/roleService");
 
 exports.categories_delete_delete = async (req, res, next) => {
     const { id } = req.params;
@@ -618,17 +620,12 @@ exports.users_edit_get = async (req, res, next) => {
 };
 
 exports.users_edit_put = async (req, res, next) => {
-    const {
-        userid,
-        fullname,
-        email,
-        roles
-    } = req.body;
+    const userid = req.params.userid;
+    const { fullname, email, roles } = req.body;
+    const currentUserId = req.user.userid;
+
     try {
-        const user = await User.findOne({
-            where: { userid: userid },
-            include: { model: Role, attributes: ["roleid"] },
-        });
+        const user = await User.findByPk(userid);
 
         if (!user) {
             return res.status(404).json({
@@ -639,36 +636,17 @@ exports.users_edit_put = async (req, res, next) => {
 
         user.fullname = fullname;
         user.email = email;
-        
-        await user.removeRoles(user.roles);
-
-        if (roles) {
-
-            const roleIds = Array.isArray(roles)
-                ? roles
-                : [roles];
-
-            const selectedRoles = await Role.findAll({
-                where: {
-                    roleid: {
-                        [Op.in]: roleIds
-                    }
-                }
-            });
-
-            await user.addRoles(selectedRoles);
-        }
         await user.save();
 
+        if (roles) {
+            const roleIds = Array.isArray(roles) ? roles : [roles];
+            await setUserRoles(userid, roleIds, currentUserId);
+        }
+
         const updatedUser = await User.findOne({
-            where: {
-                userid: userid
-            },
+            where: { userid },
             attributes: ["userid", "fullname", "email"],
-            include: {
-                model: Role,
-                attributes: ["roleid", "rolename"]
-            }
+            include: { model: Role, attributes: ["roleid", "rolename"] }
         });
 
         return res.status(200).json({
@@ -687,6 +665,13 @@ exports.users_edit_put = async (req, res, next) => {
                     value: e.value,
                     message: e.message
                 }))
+            });
+        }
+
+        if (err.statusCode) {
+            return res.status(err.statusCode).json({
+                success: false,
+                message: err.message
             });
         }
 
@@ -853,41 +838,10 @@ exports.roles_create_post = async (req, res, next) => {
 
 exports.role_remove_delete = async (req, res, next) => {
     const { roleid, userid } = req.body;
-    const currentUserId = req.user.userid; // verifyToken middleware'inden geliyor
+    const currentUserId = req.user.userid;
 
     try {
-        const user = await User.findByPk(userid);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "Kullanıcı bulunamadı."
-            });
-        }
-
-        const role = await Role.findByPk(roleid);
-
-        if (!role) {
-            return res.status(404).json({
-                success: false,
-                message: "Rol bulunamadı."
-            });
-        }
-
-        // Admin, kendi admin rolünü kendinden kaldıramaz (self-lockout koruması)
-        if (role.slug === "admin" && String(userid) === String(currentUserId)) {
-            return res.status(403).json({
-                success: false,
-                message: "Kendi admin rolünüzü kendinizden kaldıramazsınız."
-            });
-        }
-
-        await user.removeRole(role);
-
-        // Etkilenen kullanıcının mevcut token/session'ı artık eski rolleri
-        // taşıyor olacağı için, tokenVersion'ı artırıyoruz. Bir sonraki
-        // istekte verifyToken/isAuth bunu yakalayıp yeniden login isteyecek.
-        await user.increment("tokenVersion");
+        await removeRoleFromUser(userid, roleid, currentUserId);
 
         return res.status(200).json({
             success: true,
@@ -895,6 +849,12 @@ exports.role_remove_delete = async (req, res, next) => {
         });
 
     } catch (err) {
+        if (err.statusCode) {
+            return res.status(err.statusCode).json({
+                success: false,
+                message: err.message
+            });
+        }
         next(err);
     }
 };

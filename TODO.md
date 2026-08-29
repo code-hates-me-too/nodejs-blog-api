@@ -26,4 +26,5 @@
 - [X] Register hata sayfasında direkt next'e düşüyor
 - [ ] admin slugını models hookuna taşı, admin ve diğer rollerin yönetimini yap. adminin nicki değiştirilemesin. 
 - [ ] tekrar eden kodları optimize et
+- [ ] kullanıcı profil sayfası tasarla, benzersiz kullanıcı adı, bio vs.
 - [ ] 

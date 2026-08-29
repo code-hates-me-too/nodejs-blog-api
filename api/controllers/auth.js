@@ -8,6 +8,7 @@ const Blog = require("../../models/blog");
 const Category = require("../../models/category");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
+const { addRoleToUser, removeRoleFromUser } = require("../../services/roleService");
 
 exports.register_post = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -19,17 +20,11 @@ exports.register_post = async (req, res, next) => {
             password: password
         });
 
-        const defaultRole = await Role.findOne({
-            where: {
-                rolename: "user"
-            }
-        });
-
+        const defaultRole = await Role.findOne({ where: { rolename: "user" } });
         if (!defaultRole) {
             throw new Error("Varsayılan user rolü bulunamadı.");
         }
-
-        await newUser.addRole(defaultRole);
+        await addRoleToUser(newUser.userid, defaultRole.roleid);
 
         emailService.sendMail({
             from: config.email.from,
