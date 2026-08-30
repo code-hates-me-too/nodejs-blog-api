@@ -1,14 +1,12 @@
-const bcrypt = require("bcrypt");
 const User = require("../../models/user");
-const Blog = require("../../models/blog");
-const Category = require("../../models/category");
-const Role = require("../../models/role");
+const fs = require("fs");
 
 exports.profile_get = async (req, res, next) => {
     const userid = req.user.userid;
     try {
         const user = await User.findByPk(userid, {
-            attributes: ["userid", "fullname", "email", "createdAt"]
+            attributes: ["userid", "username", "bio", "avatar", "email", "createdAt"]
+            // fullname bilinçli olarak dışarıda bırakıldı — public/profil katmanında gösterilmiyor
         });
 
         if (!user) {
@@ -30,7 +28,7 @@ exports.profile_get = async (req, res, next) => {
 
 exports.profile_update_put = async (req, res, next) => {
     const userid = req.user.userid;
-    const { fullname, email } = req.body;
+    const { username, bio } = req.body;
 
     try {
         const user = await User.findByPk(userid);
@@ -42,17 +40,18 @@ exports.profile_update_put = async (req, res, next) => {
             });
         }
 
-        user.fullname = fullname;
-        user.email = email;
+        if (username !== undefined) user.username = username;
+        if (bio !== undefined) user.bio = bio;
+
         await user.save();
 
         return res.status(200).json({
             success: true,
-            message: "Profil bilgileri güncellendi.",
+            message: "Profil güncellendi.",
             data: {
                 userid: user.userid,
-                fullname: user.fullname,
-                email: user.email
+                username: user.username,
+                bio: user.bio
             }
         });
 
@@ -69,62 +68,40 @@ exports.profile_update_put = async (req, res, next) => {
     }
 };
 
-exports.profile_password_put = async (req, res, next) => {
+exports.profile_avatar_put = async (req, res, next) => {
     const userid = req.user.userid;
-    const { currentPassword, newPassword } = req.body;
 
     try {
-        if (!currentPassword || !newPassword) {
-            return res.status(400).json({
-                success: false,
-                message: "Mevcut ve yeni parola zorunludur."
-            });
+        if (req.uploadError) {
+            const msg = req.uploadError.code === "LIMIT_FILE_SIZE"
+                ? "Resim boyutu 2MB'ı geçemez."
+                : req.uploadError.message;
+            return res.status(400).json({ success: false, message: msg });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Resim yüklenmedi." });
         }
 
         const user = await User.findByPk(userid);
+        const eskiAvatar = user.avatar;
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "Kullanıcı bulunamadı."
-            });
-        }
-
-        const match = await bcrypt.compare(currentPassword, user.password);
-
-        if (!match) {
-            return res.status(401).json({
-                success: false,
-                message: "Mevcut parola hatalı."
-            });
-        }
-
-        if (newPassword.length < 7 || newPassword.length > 24) {
-            return res.status(400).json({
-                success: false,
-                message: "Parola uzunluğu 7-24 karakter arası olmak zorundadır."
-            });
-        }
-
-        user.password = newPassword;
-        user.tokenVersion += 1; // parola değişince tüm cihazlardaki oturumlar geçersiz olur
-
+        user.avatar = req.file.filename;
         await user.save();
+
+        if (eskiAvatar) {
+            fs.unlink("./public/avatars/" + eskiAvatar, err => {
+                if (err) console.log(err);
+            });
+        }
 
         return res.status(200).json({
             success: true,
-            message: "Parolanız güncellendi. Güvenlik için tekrar giriş yapmanız gerekecek."
+            message: "Profil fotoğrafı güncellendi.",
+            data: { avatar: user.avatar }
         });
 
     } catch (err) {
-        if (err.name === "SequelizeValidationError" || err.name === "SequelizeUniqueConstraintError") {
-            const errors = err.errors.map(e => e.message);
-            return res.status(400).json({
-                success: false,
-                message: "Parola güncellenemedi.",
-                errors: errors
-            });
-        }
         next(err);
     }
 };

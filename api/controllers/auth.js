@@ -11,11 +11,12 @@ const { Op } = require("sequelize");
 const { addRoleToUser, removeRoleFromUser } = require("../../services/roleService");
 
 exports.register_post = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, username } = req.body;
 
     try {
         const newUser = await User.create({
             fullname: name,
+            username: username,
             email: email,
             password: password
         });
@@ -281,6 +282,49 @@ exports.newpassword_post = async (req, res, next) => {
                 errors: errors
             });
         }
+        next(err);
+    }
+};
+
+exports.check_username = async (req, res, next) => {
+    const { username } = req.query;
+
+    try {
+        if (!username) {
+            return res.status(400).json({
+                success: false,
+                message: "Kullanıcı adı gerekli."
+            });
+        }
+
+        const normalized = username.toLowerCase();
+        const formatValid = /^[a-z0-9_-]{3,30}$/.test(normalized);
+
+        if (!formatValid) {
+            return res.status(200).json({
+                success: true,
+                available: false,
+                message: "3-30 karakter, sadece küçük harf, rakam, alt çizgi ve tire kullanılabilir."
+            });
+        }
+
+        const where = { username: normalized };
+
+        // Kendi profilinden kendi mevcut username'ini kontrol ederse
+        // "kullanılıyor" demeyelim — kendi kaydını hariç tutuyoruz.
+        if (req.user?.userid) {
+            where.userid = { [Op.ne]: req.user.userid };
+        }
+
+        const existing = await User.findOne({ where });
+
+        return res.status(200).json({
+            success: true,
+            available: !existing,
+            message: existing ? "Bu kullanıcı adı kullanılıyor." : "Kullanıcı adı müsait."
+        });
+
+    } catch (err) {
         next(err);
     }
 };

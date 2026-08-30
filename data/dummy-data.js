@@ -32,11 +32,15 @@ async function populate() {
         rolename: "moderator"
     });
 
+    const defaultRole = await Role.create({
+        rolename: "user"
+    });
+
     
 
     // Rol ilişkileri
     await adminUser.addRoles([adminRole, userRole]);
-    await normalUser.addRole(userRole);
+    await normalUser.addRole(defaultRole);
 
     const count = await Category.count();
 
