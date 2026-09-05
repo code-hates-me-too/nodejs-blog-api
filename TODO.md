@@ -22,9 +22,22 @@
 - [X] Default member rolü ve bunu kimin oluşturacağı sorusu
 - [X] API blogs sayfası için pagination ve diğer api düzeltmeleri
 - [X] API ve normal route linklerini derle
-- [ ] Admin son rolünü ve kendi rolünü kaldıramasın
+- [X] Admin son rolünü ve kendi rolünü kaldıramasın
 - [X] Register hata sayfasında direkt next'e düşüyor
 - [ ] admin slugını models hookuna taşı, admin ve diğer rollerin yönetimini yap. adminin nicki değiştirilemesin. 
 - [ ] tekrar eden kodları optimize et
 - [ ] kullanıcı profil sayfası tasarla, benzersiz kullanıcı adı, bio vs.
 - [ ] 
+- [X] gün 1
+- [X] gün 2
+- [X] gün 3
+- [X] gün 4
+- [X] gün 5
+- [X] gün 6
+- [ ] Donanım Bakımı ve React Blog Geliştirmeleri
+- [X] gün 8
+- [X] gün 9
+- [X] gün 10
+- [ ] 
+- [ ] 
+

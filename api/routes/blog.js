@@ -2,13 +2,15 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 const requireRole = require("../middlewares/requireRole");
-const blogContoller = require("../controllers/blog");
+const blogController = require("../controllers/blog");
 
 
-router.get("/category/:slug", blogContoller.blogs);
+router.get("/categories", blogController.categories_get);
 
-router.get("/:slug", blogContoller.blog_details);
+router.get("/category/:slug", blogController.blogs);
 
-router.get("/", blogContoller.mainpage);
+router.get("/:slug", blogController.blog_details);
+
+router.get("/", blogController.blogs);
 
 module.exports = router;

@@ -545,10 +545,16 @@ exports.blogs_get = async (req, res, next) => {
         const isAdmin = roles.includes("admin");
         const isModerator = roles.includes("moderator");
         const blogs = await Blog.findAll({
-            include: {
-                model: Category,
-                attributes: ["categoryname"]
-            },
+            include: [
+                {
+                    model: Category,
+                    attributes: ["categoryname"]
+                },
+                {
+                    model: User,
+                    attributes: ["username"]   
+                }
+            ],
             where: isModerator && !isAdmin
                 ? { userid: userid }
                 : undefined
@@ -568,7 +574,7 @@ exports.users_get = async (req, res, next) => {
     req.session.message = null; 
     try {
         const users = await User.findAll({
-            attributes: ["userid", "fullname", "email"],
+            attributes: ["userid", "fullname", "email", "username", "avatar"],
             include: {
                 model: Role,
                 attributes: ["rolename"]
@@ -725,7 +731,7 @@ exports.role_edit_get = async (req, res, next) => {
         }
 
         const users = await role.getUsers({
-            attributes: ["userid", "fullname", "email"]
+            attributes: ["userid", "username", "email", "avatar"]
         });
 
         return res.status(200).json({
@@ -897,6 +903,53 @@ exports.roles_delete_delete = async (req, res, next) => {
             success: true,
             message: "Rol silindi."
         });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.role_add_post = async (req, res, next) => {
+    const { roleid, userid } = req.body;
+    try {
+        const { user } = await addRoleToUser(userid, roleid);
+
+        return res.status(200).json({
+            success: true,
+            message: "Kullanıcı role eklendi.",
+            data: {
+                userid: user.userid,
+                username: user.username,
+                email: user.email
+            }
+        });
+
+    } catch (err) {
+        if (err.statusCode) {
+            return res.status(err.statusCode).json({ success: false, message: err.message });
+        }
+        next(err);
+    }
+};
+
+exports.users_search_get = async (req, res, next) => {
+    const { username } = req.query;
+    try {
+        const query = (username || "").trim().toLowerCase();
+
+        if (query.length < 2) {
+            return res.status(200).json({ success: true, data: [] });
+        }
+
+        const users = await User.findAll({
+            where: {
+                username: { [Op.like]: `%${query}%` }
+            },
+            attributes: ["userid", "username", "email", "avatar"],
+            limit: 10
+        });
+
+        return res.status(200).json({ success: true, data: users });
 
     } catch (err) {
         next(err);

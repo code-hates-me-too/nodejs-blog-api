@@ -1,6 +1,8 @@
 const Blog = require("../../models/blog");
 const Category = require("../../models/category");
 const { Op } = require("sequelize");
+const User = require("../../models/user");
+
 
 exports.blog_details = async (req, res, next) => {
     const slug = req.params.slug;
@@ -31,29 +33,45 @@ exports.blog_details = async (req, res, next) => {
 };
 
 exports.blogs = async (req, res, next) => {
-    const size = 6;
+    const size = 15;
     let page;
     const slug = req.params.slug;
+    const arama = req.query.ara;
 
     try {
         page = Number(req.query.page);
         if (!Number.isInteger(page) || page < 0) {
             page = 0;
         }
-        const { rows, count } = await Blog.findAndCountAll({
-            where: {
-                onay: true
-            },
-            include: slug
-                ? {
-                    model: Category,
-                    where: { url: slug }
-                }
-                : null,
-            limit: size,
-            offset: page * size
-        });
 
+        const where = { onay: true };
+
+        if (arama) {
+            where[Op.or] = [
+                { baslik: { [Op.like]: `%${arama}%` } },
+                { altbaslik: { [Op.like]: `%${arama}%` } }
+            ];
+        }
+
+        const queryOptions = {
+            where,
+            include: [
+                {
+                    model: Category,
+                    attributes: ["categoryid", "categoryname", "url"],
+                    ...(slug ? { where: { url: slug } } : {})
+                },
+                {
+                    model: User,
+                    attributes: ["username", "avatar"]
+                }
+            ],
+            limit: size,
+            offset: page * size,
+            distinct: true
+        };
+
+        const { rows, count } = await Blog.findAndCountAll(queryOptions);
         const categories = await Category.findAll();
 
         return res.status(200).json({
@@ -74,7 +92,7 @@ exports.blogs = async (req, res, next) => {
 };
 
 exports.mainpage = async (req, res, next) => {
-    const size = 6;
+    const size = 15;
     const page = Number(req.query.page) || 0;
 
     try {
@@ -101,6 +119,23 @@ exports.mainpage = async (req, res, next) => {
             },
             categories,
             blogs: rows
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.categories_get = async (req, res, next) => {
+    try {
+        const categories = await Category.findAll({
+            attributes: ["categoryid", "categoryname", "url"],
+            order: [["categoryname", "ASC"]]
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: categories
         });
 
     } catch (err) {

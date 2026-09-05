@@ -30,6 +30,12 @@ router.put("/blogs/:blogid", verifyToken, requireRole("admin", "moderator"), ima
 
 router.get("/blogs", verifyToken, requireRole("admin", "moderator"), adminController.blogs_get); 
 
+router.get("/users", verifyToken, requireRole("admin"), adminController.users_get);
+
+router.get("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_get);
+
+router.put("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_put);
+
 router.delete("/roles/delete/:roleid", verifyToken, requireRole("admin"), adminController.roles_delete_delete);
 
 router.delete("/roles/remove", verifyToken, requireRole("admin"), adminController.role_remove_delete);
@@ -42,10 +48,13 @@ router.get("/roles/:roleid", verifyToken, requireRole("admin"), adminController.
 
 router.put("/roles/:roleid", verifyToken, requireRole("admin"), adminController.role_edit_put);
 
-router.get("/users", verifyToken, requireRole("admin"), adminController.users_get);
+router.post("/add", verifyToken, requireRole("admin"), adminController.role_add_post);
 
-router.get("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_get);
+//************************/
 
-router.put("/users/:userid", verifyToken, requireRole("admin"), adminController.users_edit_put);
+router.get("/", verifyToken, requireRole("admin"), adminController.users_get);
+router.get("/search", verifyToken, requireRole("admin"), adminController.users_search_get); 
+router.get("/:userid", verifyToken, requireRole("admin"), adminController.users_edit_get);
+router.put("/:userid", verifyToken, requireRole("admin"), adminController.users_edit_put);
 
 module.exports = router;
