@@ -12,7 +12,17 @@ exports.blog_details = async (req, res, next) => {
             where: {
                 url: slug,
                 onay: true
-            }
+            },
+            include: [
+                {
+                    model: Category,
+                    attributes: ["categoryid", "categoryname", "url"]
+                },
+                {
+                    model: User,
+                    attributes: ["username", "avatar"]
+                }
+            ]
         });
 
         if (!blog) {

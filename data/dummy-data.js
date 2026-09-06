@@ -9,11 +9,13 @@ async function populate() {
     const users = await User.bulkCreate([
         {
             fullname: "hokoko",
+            username: "hokokoyum",
             email: "info@hokoko.com",
             password: await bcrypt.hash("12345", 10)
         },
         {
             fullname: "mokoko",
+            username: "mokokoyum",
             email: "info@mokoko.com",
             password: await bcrypt.hash("12345", 10)
         },

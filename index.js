@@ -88,7 +88,25 @@ User.belongsToMany(Role, {
     through: UserRole,
     foreignKey: "userid",
     otherKey: "roleid"
-});   
+}); 
+
+const Comment = require("./models/comment");
+const CommentReaction = require("./models/commentReaction");
+
+Comment.belongsTo(Blog, { foreignKey: "blogid" });
+Blog.hasMany(Comment, { foreignKey: "blogid" });
+
+Comment.belongsTo(User, { foreignKey: "userid" });
+User.hasMany(Comment, { foreignKey: "userid" });
+
+Comment.belongsTo(Comment, { as: "parent", foreignKey: "parentid" });
+Comment.hasMany(Comment, { as: "replies", foreignKey: "parentid" });
+
+CommentReaction.belongsTo(Comment, { foreignKey: "commentid" });
+Comment.hasMany(CommentReaction, { foreignKey: "commentid" });
+
+CommentReaction.belongsTo(User, { foreignKey: "userid" });
+User.hasMany(CommentReaction, { foreignKey: "userid" });
 
 (async () => {
     // await sessionStore.sync();
