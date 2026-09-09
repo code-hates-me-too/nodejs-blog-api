@@ -2,6 +2,8 @@ const Blog = require("../../models/blog");
 const { SNAPSHOT_ALANLARI } = require("../../helpers/blogOnay");
 const Comment = require("../../models/comment");
 const User = require("../../models/user");
+const Notification = require("../../models/notification");
+
 
 exports.bekleyen_bloglar_get = async (req, res, next) => {
     try {
@@ -87,7 +89,10 @@ exports.blog_onayla_put = async (req, res, next) => {
                 if (err) console.log(err);
             });
         }
-
+        await Notification.create({
+            userid: blog.userid,
+            mesaj: `"${blog.baslik}" başlıklı blogunuz onaylandı.`
+        });
         return res.status(200).json({ success: true, message: "Blog onaylandı." });
     } catch (err) {
         next(err);
@@ -202,6 +207,12 @@ exports.yorum_onayla_put = async (req, res, next) => {
 
         yorum.onay = true;
         await yorum.save();
+
+        const ozet = yorum.icerik.split(" ").slice(0, 3).join(" ");
+        await Notification.create({
+            userid: yorum.userid,
+            mesaj: `"${ozet}..." yorumunuz onaylandı.`
+        });
 
         return res.status(200).json({ success: true, message: "Yorum onaylandı." });
     } catch (err) {

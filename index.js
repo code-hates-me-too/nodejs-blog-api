@@ -47,6 +47,7 @@ const Blog = require("./models/blog");
 const Category = require("./models/category");
 const User = require("./models/user");
 const Role = require("./models/role");
+const Notification = require("./models/notification");
 const dummyData = require("./data/dummy-data");
 const seedRoles = require("./seeders/roleSeeder");
 
@@ -107,6 +108,9 @@ Comment.hasMany(CommentReaction, { foreignKey: "commentid" });
 
 CommentReaction.belongsTo(User, { foreignKey: "userid" });
 User.hasMany(CommentReaction, { foreignKey: "userid" });
+
+Notification.belongsTo(User, { foreignKey: "userid" });
+User.hasMany(Notification, { foreignKey: "userid" });
 
 (async () => {
     // await sessionStore.sync();

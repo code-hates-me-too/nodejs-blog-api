@@ -6,5 +6,6 @@ router.use("/auth", require("./auth"));
 router.use("/admin/onaylar", require("./onay"));
 router.use("/admin", require("./admin"));
 router.use("/profile", require("./profile"));
+router.use("/notifications", require("./notification"));
 
 module.exports = router;
