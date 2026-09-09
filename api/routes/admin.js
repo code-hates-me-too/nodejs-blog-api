@@ -18,6 +18,8 @@ router.put("/categories/:id", verifyToken, requireRole("admin"), adminController
 
 router.get("/categories", verifyToken, requireRole("admin"), adminController.categories_get); 
 
+router.put("/blogs/:blogid/iptal", verifyToken, requireRole("admin", "moderator"), adminController.blog_duzenleme_iptal_put);
+
 router.delete("/blog/delete/:id", verifyToken, requireRole("admin", "moderator"), adminController.blog_delete_delete); 
 
 router.get("/blogs/create", verifyToken, requireRole("admin", "moderator"), adminController.blog_create_get); 
@@ -56,5 +58,8 @@ router.get("/", verifyToken, requireRole("admin"), adminController.users_get);
 router.get("/search", verifyToken, requireRole("admin"), adminController.users_search_get); 
 router.get("/:userid", verifyToken, requireRole("admin"), adminController.users_edit_get);
 router.put("/:userid", verifyToken, requireRole("admin"), adminController.users_edit_put);
+
+//-------------------------------
+
 
 module.exports = router;

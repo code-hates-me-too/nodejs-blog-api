@@ -44,7 +44,7 @@ exports.register_post = async (req, res, next) => {
         const token = jwt.sign(
             {
                 userid: newUser.userid,
-                fullname: newUser.fullname,
+                username: newUser.username,
                 email: newUser.email,
                 roles: roles,
                 tokenVersion: newUser.tokenVersion
@@ -59,7 +59,7 @@ exports.register_post = async (req, res, next) => {
             token: token,
             user: {
                 userid: newUser.userid,
-                fullname: newUser.fullname,
+                username: newUser.username,
                 email: newUser.email,
                 roles: roles
             }
@@ -122,7 +122,7 @@ exports.login_post = async (req, res, next) => {
         const token = jwt.sign(
             {
                 userid: user.userid,
-                fullname: user.fullname,
+                username: user.username,
                 email: user.email,
                 roles: roles,
                 tokenVersion: user.tokenVersion
@@ -137,7 +137,7 @@ exports.login_post = async (req, res, next) => {
             token: token,
             user: {
                 userid: user.userid,
-                fullname: user.fullname,
+                username: user.username,
                 email: user.email,
                 roles: roles
             }

@@ -9,6 +9,8 @@ const slugField = require("../../helpers/slugfield");
 const SYSTEM_ROLE_SLUGS = require("../../helpers/systemRoles");
 const { addRoleToUser, removeRoleFromUser } = require("../../services/roleService");
 const { setUserRoles } = require("../../services/roleService");
+const { oncekiHaliYakala } = require("../../helpers/blogOnay");
+const { SNAPSHOT_ALANLARI } = require("../../helpers/blogOnay");
 
 exports.categories_delete_delete = async (req, res, next) => {
     const { id } = req.params;
@@ -237,7 +239,7 @@ exports.blog_delete_delete = async (req, res, next) => {
     try {
         const roles = req.user.roles || [];
         const isAdmin = roles.includes("admin");
-        
+
         const blog = await Blog.findOne({
             where: isAdmin
                 ? { blogid: blogid }
@@ -250,6 +252,14 @@ exports.blog_delete_delete = async (req, res, next) => {
                 message: "Silinecek blog bulunamadı."
             });
         }
+
+        if (!isAdmin && blog.ilkOnayVerildiMi) {
+            return res.status(403).json({
+                success: false,
+                message: "Yayınlanmış bir blog moderatör tarafından silinemez."
+            });
+        }
+
         const image = blog.resim;
         await blog.destroy();
         if (image) {
@@ -266,7 +276,7 @@ exports.blog_delete_delete = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-}; 
+};
 
 exports.blog_create_get = async (req, res, next) => {
     try {
@@ -285,74 +295,54 @@ exports.blog_create_get = async (req, res, next) => {
 }; 
 
 exports.blog_create_post = async (req, res, next) => {
-    const {
-        baslik,
-        altbaslik,
-        aciklama,
-        anasayfa,
-        onay,
-        categories
-    } = req.body;
+    const baslik = req.body.baslik;
+    const altbaslik = req.body.altbaslik;
+    const aciklama = req.body.aciklama;
+    const resim = req.file ? req.file.filename : null;
+    const userid = req.user.userid; 
+    const kategoriIDler = req.body.categories
+        ? [].concat(req.body.categories).map(id => Number(id))
+        : [];
 
-    const resim = req.file ? req.file.filename : "";
-    const userid = req.user.userid;
-
+    const adminMi = (req.user.roles || []).includes("admin");
     const t = await sequelize.transaction();
 
     try {
         const blog = await Blog.create({
-            baslik: baslik,
-            altbaslik: altbaslik,
-            aciklama: aciklama,
-            resim: resim,
-            anasayfa: anasayfa ? 1 : 0,
-            onay: onay ? 1 : 0,
-            userid: userid
-        }, {
-            transaction: t
-        });
-        if (categories && categories.length) {
-            await blog.setCategories(categories, {
-                transaction: t
-            });
+            baslik, altbaslik, aciklama, resim, userid,
+            onay: adminMi,
+            ilkOnayVerildiMi: adminMi
+        }, { transaction: t });
+
+        if (kategoriIDler) {
+            await blog.setCategories(kategoriIDler, { transaction: t });
         }
+
         await t.commit();
+
+        // TODO Aşama 3: adminMi false ise adminlere "yeni onay bekliyor" maili
 
         return res.status(201).json({
             success: true,
-            message: "Blog oluşturuldu.",
-            data: {
-                blog: blog
-            }
+            message: adminMi
+                ? "Blog oluşturuldu."
+                : "Blog oluşturuldu, admin onayı bekleniyor."
         });
 
     } catch (err) {
-        if (t) { await t.rollback(); }
+        if (t) await t.rollback();
         if (req.file) {
             fs.unlink("./public/images/" + req.file.filename, err => {
                 if (err) console.log(err);
             });
-        }   
+        }
         if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
             const errors = err.errors.map(e => e.message);
-
-            return res.status(400).json({
-                success: false,
-                message: "Blog oluşturulamadı.",
-                errors: errors,
-                values: {
-                    baslik,
-                    altbaslik,
-                    aciklama,
-                    anasayfa,
-                    onay,
-                    categories
-                }
-            });
+            return res.status(400).json({ success: false, message: "Blog oluşturulamadı.", errors });
         }
         next(err);
     }
-}; 
+};
 
 exports.blog_edit_get = async (req, res, next) => {
     const { blogid } = req.params;
@@ -395,144 +385,88 @@ exports.blog_edit_get = async (req, res, next) => {
 
 exports.blog_edit_put = async (req, res, next) => {
     const blogid = req.params.blogid;
-    const {
-        baslik,
-        altbaslik,
-        aciklama,
-        anasayfa,
-        onay,
-        categories,
-        eskiResim,
-        resimKaldir
-    } = req.body;
-    const userid = req.user.userid;
-    const roles = req.user.roles || [];
+    const baslik = req.body.baslik;
+    const altbaslik = req.body.altbaslik;
+    const aciklama = req.body.aciklama;
 
-    const resim = req.file
-        ? req.file.filename
-        : eskiResim;
+    const kategoriIDler = req.body.categories
+        ? [].concat(req.body.categories).map(id => Number(id))
+        : [];
+    const resimKaldir = req.body.resimKaldir === "true";
 
-    let t;
-    let blog; 
+    const adminMi = (req.user.roles || []).includes("admin");
+    const t = await sequelize.transaction();
+
     try {
-        const isAdmin = roles.includes("admin");
-
-        t = await sequelize.transaction();
-
-        blog = await Blog.findOne({   
-            where: isAdmin ? { blogid: blogid } : { blogid: blogid, userid: userid },
-            include: {
-                model: Category,
-                attributes: ["categoryid"]
-            },
+        const blog = await Blog.findOne({
+            where: { blogid },
+            include: { model: Category, attributes: ["categoryid"] },
             transaction: t
         });
 
         if (!blog) {
             await t.rollback();
+            return res.status(404).json({ success: false, message: "Blog bulunamadı." });
+        }
 
-            return res.status(404).json({
-                success: false,
-                message: "Blog bulunamadı."
-            });
+        const eskiResim = blog.resim;
+
+        if (!adminMi && blog.ilkOnayVerildiMi && blog.onay) {
+            blog.oncekiOnayliHali = await oncekiHaliYakala(blog);
         }
 
         blog.baslik = baslik;
         blog.altbaslik = altbaslik;
         blog.aciklama = aciklama;
-        blog.resim = resim;
-        if (resimKaldir === "true" && !req.file) {
 
+        if (req.file) {
+            blog.resim = req.file.filename;
+        } else if (resimKaldir) {
             blog.resim = null;
-
-            if (eskiResim) {
-                fs.unlink(
-                    "./public/images/" + eskiResim,
-                    err => {
-                        if (err) console.log(err);
-                    }
-                );
-            }
         }
-        blog.anasayfa = anasayfa === "true" || anasayfa === "1";
-        blog.onay = onay === "true" || onay === "1";
+
+        if (adminMi) {
+            blog.onay = true;
+            blog.ilkOnayVerildiMi = true;
+            blog.oncekiOnayliHali = null;
+        } else {
+            blog.onay = false;
+            blog.reddedildiMi = false;      // <- eklendi
+            blog.reddedilmeNotu = null;     // <- eklendi
+        }
 
         if (blog.categories.length) {
-            await blog.removeCategories(
-                blog.categories,
-                { transaction: t }
-            );
+            await blog.removeCategories(blog.categories, { transaction: t });
         }
-        if (categories) {
-
-            const kategoriIDler = Array.isArray(categories)
-                ? categories
-                : [categories];
-
+        if (kategoriIDler?.length) {
             const selectedCategories = await Category.findAll({
-                where: {
-                    categoryid: {
-                        [Op.in]: kategoriIDler
-                    }
-                },
+                where: { categoryid: { [Op.in]: kategoriIDler } },
                 transaction: t
             });
-
-            await blog.addCategories(
-                selectedCategories,
-                { transaction: t }
-            );
+            await blog.addCategories(selectedCategories, { transaction: t });
         }
 
         await blog.save({ transaction: t });
         await t.commit();
 
-        if (req.file && req.body.eskiResim) {
-            fs.unlink(
-                "./public/images/" + req.body.eskiResim,
-                err => {
-                    if (err) {
-                        console.log(err);
-                    }
-                }
-            );
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Blog başarıyla güncellendi.",
-            data: blog
-        });
-
-    } catch (err) {
-        if (t) await t.rollback();
-        if (req.file) {
-            fs.unlink("./public/images/" + req.file.filename, err => {
+        if (adminMi && (req.file || resimKaldir) && eskiResim) {
+            fs.unlink("./public/images/" + eskiResim, err => {
                 if (err) console.log(err);
             });
         }
 
-        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
-            return res.status(400).json({
-                success: false,
-                message: "Blog güncellenemedi.",
-                errors: err.errors.map(e => ({
-                    field: e.path,
-                    value: e.value,
-                    message: e.message
-                })),                
-                values: {
-                    baslik,
-                    altbaslik,
-                    aciklama,
-                    resim,
-                    anasayfa,
-                    onay,
-                    categories
-                }
-            });
-        }
+        return res.status(200).json({
+            success: true,
+            message: adminMi ? "Blog düzenlendi." : "Değişiklikler kaydedildi, admin onayı bekleniyor."
+        });
 
+    } catch (err) {
+        if (t) await t.rollback();
+        console.error("blog_edit_put hatası:", err); 
+        if (err.name == "SequelizeValidationError" || err.name == "SequelizeUniqueConstraintError") {
+            const errors = err.errors.map(e => e.message);
+            return res.status(400).json({ success: false, message: "Blog düzenlenemedi.", errors });
+        }
         next(err);
     }
 };
@@ -552,7 +486,6 @@ exports.blogs_get = async (req, res, next) => {
                 },
                 {
                     model: User,
-                    attributes: ["username"]   
                 }
             ],
             where: isModerator && !isAdmin
@@ -950,6 +883,55 @@ exports.users_search_get = async (req, res, next) => {
         });
 
         return res.status(200).json({ success: true, data: users });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.blog_duzenleme_iptal_put = async (req, res, next) => {
+    const blogid = req.params.blogid;
+    const userid = req.user.userid;
+
+    try {
+        const blog = await Blog.findOne({ where: { blogid, userid } });
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog bulunamadı." });
+        }
+
+        if (blog.onay || !blog.ilkOnayVerildiMi || !blog.oncekiOnayliHali) {
+            return res.status(400).json({
+                success: false,
+                message: "İptal edilecek bekleyen bir düzenleme yok."
+            });
+        }
+
+        const iptalEdilenResim = blog.resim;
+        const eskiResim = blog.oncekiOnayliHali.resim;
+        const eskiKategoriIDler = blog.oncekiOnayliHali.kategoriIDler || [];
+
+        for (const alan of SNAPSHOT_ALANLARI) {
+            blog[alan] = blog.oncekiOnayliHali[alan];
+        }
+        blog.onay = true;
+        blog.oncekiOnayliHali = null;
+        await blog.save();
+
+        const mevcutKategoriler = await blog.getCategories();
+        if (mevcutKategoriler.length) {
+            await blog.removeCategories(mevcutKategoriler);
+        }
+        if (eskiKategoriIDler.length) {
+            await blog.addCategories(eskiKategoriIDler);
+        }
+
+        if (iptalEdilenResim && iptalEdilenResim !== eskiResim) {
+            fs.unlink("./public/images/" + iptalEdilenResim, err => {
+                if (err) console.log(err);
+            });
+        }
+
+        return res.status(200).json({ success: true, message: "Değişiklikler iptal edildi." });
 
     } catch (err) {
         next(err);

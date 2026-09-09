@@ -4,7 +4,7 @@ const User = require("../../models/user");
 const { Op } = require("sequelize");
 
 const MAX_DERINLIK = 2;
-const SAYFA_BOYUTU = 10;
+const SAYFA_BOYUTU = 20;
 
 
 async function getReactionSummary(commentIds, currentUserId) {

@@ -113,7 +113,7 @@ User.hasMany(CommentReaction, { foreignKey: "userid" });
 
     // await sequelize.sync({ force: true });
 
-    // // // await seedRoles();
+    // // await seedRoles();
     
     // await dummyData();
 })();

@@ -65,23 +65,36 @@ const Blog = sequelize.define("blog", {
         type: DataTypes.STRING,
         allowNull: true
     },
-    anasayfa: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-    },
     onay: {
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
+    ilkOnayVerildiMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    oncekiOnayliHali: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    reddedildiMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    reddedilmeNotu: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    pasifMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    }
 }, {
     freezeTableName: true,
-    validate: {
-        checkValidOnay(){
-            if(this.anasayfa && !this.onay) {
-                throw new Error("Anasayfaya aldığınız blog onaylı olmak zorundadır");
-            }
-        }
-    }
+    timestamps: true
 });
 
 Blog.beforeValidate((blog, options) => {
