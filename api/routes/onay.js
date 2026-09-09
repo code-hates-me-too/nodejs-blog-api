@@ -15,6 +15,8 @@ router.put("/bloglar/:blogid/reddet", verifyToken, requireRole("admin"), onayCon
 router.put("/bloglar/:blogid/pasif", verifyToken, requireRole("admin"), onayController.blog_pasif_put);
 router.put("/bloglar/:blogid/aktif", verifyToken, requireRole("admin"), onayController.blog_aktif_put);
 
-
+router.get("/yorumlar", verifyToken, requireRole("admin"), onayController.bekleyen_yorumlar_get);
+router.put("/yorumlar/:commentid/onayla", verifyToken, requireRole("admin"), onayController.yorum_onayla_put);
+router.delete("/yorumlar/:commentid/reddet", verifyToken, requireRole("admin"), onayController.yorum_reddet_delete);
 
 module.exports = router;

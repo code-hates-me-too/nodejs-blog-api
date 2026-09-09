@@ -1,5 +1,7 @@
 const Blog = require("../../models/blog");
 const { SNAPSHOT_ALANLARI } = require("../../helpers/blogOnay");
+const Comment = require("../../models/comment");
+const User = require("../../models/user");
 
 exports.bekleyen_bloglar_get = async (req, res, next) => {
     try {
@@ -168,3 +170,55 @@ exports.blog_aktif_put = async (req, res, next) => {
     }
 };
 
+exports.bekleyen_yorumlar_get = async (req, res, next) => {
+    try {
+        const yorumlar = await Comment.findAll({
+            where: { onay: false },
+            include: [
+                { model: User, attributes: ["username"] },
+                { model: Blog, attributes: ["blogid", "baslik", "url"] },
+                {
+                    model: Comment,
+                    as: "parent",
+                    attributes: ["commentid", "icerik"],
+                    include: [{ model: User, attributes: ["username"] }]
+                }
+            ],
+            order: [["createdAt", "ASC"]]
+        });
+
+        return res.status(200).json({ success: true, data: yorumlar });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.yorum_onayla_put = async (req, res, next) => {
+    const commentid = req.params.commentid;
+    try {
+        const yorum = await Comment.findByPk(commentid);
+        if (!yorum) return res.status(404).json({ success: false, message: "Yorum bulunamadı." });
+
+        yorum.onay = true;
+        await yorum.save();
+
+        return res.status(200).json({ success: true, message: "Yorum onaylandı." });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.yorum_reddet_delete = async (req, res, next) => {
+    const commentid = req.params.commentid;
+    try {
+        const yorum = await Comment.findByPk(commentid);
+        if (!yorum) return res.status(404).json({ success: false, message: "Yorum bulunamadı." });
+
+        await yorum.destroy();
+
+        return res.status(200).json({ success: true, message: "Yorum reddedildi ve silindi." });
+    } catch (err) {
+        next(err);
+    }
+};

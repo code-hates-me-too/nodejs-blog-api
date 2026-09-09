@@ -13,7 +13,7 @@ const Comment = sequelize.define("comment", {
         allowNull: false,
         validate: {
             notEmpty: { msg: "Yorum boş olamaz." },
-            len: { args: [1, 1000], msg: "Yorum en fazla 1000 karakter olabilir." }
+            len: { args: [1, 700], msg: "Yorum en fazla 700 karakter olabilir." }
         }
     },
     derinlik: {
@@ -24,7 +24,7 @@ const Comment = sequelize.define("comment", {
     onay: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
     }
 }, {
     freezeTableName: true,
