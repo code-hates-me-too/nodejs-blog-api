@@ -10,85 +10,18 @@ const crypto = require("crypto");
 const { Op } = require("sequelize");
 const { addRoleToUser, removeRoleFromUser } = require("../../services/roleService");
 
-// exports.register_post = async (req, res, next) => {
-//     const { name, email, password, username } = req.body;
-
-//     try {
-//         const newUser = await User.create({
-//             fullname: name,
-//             username: username,
-//             email: email,
-//             password: password
-//         });
-
-//         const defaultRole = await Role.findOne({ where: { rolename: "user" } });
-//         if (!defaultRole) {
-//             throw new Error("Varsayılan user rolü bulunamadı.");
-//         }
-//         await addRoleToUser(newUser.userid, defaultRole.roleid);
-
-//         emailService.sendMail({
-//             from: config.email.from,
-//             to: newUser.email,
-//             subject: "Hesabınız Oluşturuldu",
-//             text: "Hesabınız başarıyla oluşturuldu"
-//         }).catch(err => console.log(err));
-
-//         const userRoles = await newUser.getRoles({
-//             attributes: ["rolename"],
-//             raw: true
-//         });
-
-//         const roles = userRoles.map(role => role.rolename);
-
-//         const token = jwt.sign(
-//             {
-//                 userid: newUser.userid,
-//                 username: newUser.username,
-//                 email: newUser.email,
-//                 roles: roles,
-//                 tokenVersion: newUser.tokenVersion
-//             },
-//             process.env.JWT_SECRET,
-//             { expiresIn: process.env.JWT_EXPIRES_IN }
-//         );
-
-//         return res.status(201).json({
-//             success: true,
-//             message: "Kayıt başarılı.",
-//             token: token,
-//             user: {
-//                 userid: newUser.userid,
-//                 username: newUser.username,
-//                 email: newUser.email,
-//                 roles: roles
-//             }
-//         });
-
-//     } catch (err) {
-    
-//         if (
-//             err.name === "SequelizeValidationError" ||
-//             err.name === "SequelizeUniqueConstraintError"
-//         ) {
-//             const errors = err.errors.map(e => e.message);
-
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Kayıt başarısız.",
-//                 errors: errors
-//             });
-//         }
-
-//         next(err);
-//     }
-// };
-
 exports.register_post = async (req, res, next) => {
     const { name, username, email, password } = req.body;
 
     try {
         const dogrulamaTokeni = crypto.randomBytes(32).toString("hex");
+
+        if (!password || password.length < 7 || password.length > 24) {
+            return res.status(400).json({
+                success: false,
+                message: "Parola uzunluğu 7-24 karakter arası olmak zorundadır."
+            });
+        }
 
         const newUser = await User.create({
             fullname: name,
@@ -116,7 +49,7 @@ exports.register_post = async (req, res, next) => {
 
         return res.status(201).json({
             success: true,
-            message: "Hesabınız oluşturuldu. Doğrulama bağlantısı e-posta adresinize gönderildi."
+            message: "Hesabınız oluşturuldu. Hesabınıza giriş yapabilmeniz için doğrulama bağlantısı e-posta adresinize gönderildi."
         });
 
     } catch (err) {

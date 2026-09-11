@@ -958,7 +958,15 @@ exports.blog_duzenleme_iptal_put = async (req, res, next) => {
 
 exports.kullanici_yorum_engelle_put = async (req, res, next) => {
     const userid = req.params.userid;
+    const currentUserId = req.user.userid;
     try {
+        if (String(userid) === String(currentUserId)) {
+            return res.status(403).json({
+                success: false,
+                message: "Kendi yorum yapma yetkinizi kısıtlayamazsınız."
+            });
+        }
+
         const user = await User.findByPk(userid);
         if (!user) {
             return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
