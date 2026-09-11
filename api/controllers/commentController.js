@@ -1,6 +1,7 @@
 const Comment = require("../../models/comment");
 const CommentReaction = require("../../models/commentReaction");
 const User = require("../../models/user");
+const Blog = require("../../models/blog");
 const { Op } = require("sequelize");
 
 const MAX_DERINLIK = 2;
@@ -45,10 +46,11 @@ function buildCommentTree(allComments, reactionSummary) {
 
         return {
             commentid: comment.commentid,
-            icerik: comment.icerik,
+            icerik: comment.silindiMi ? null : comment.icerik,
             derinlik: comment.derinlik,
             createdAt: comment.createdAt,
-            user: comment.user,
+            user: comment.silindiMi ? null : comment.user,
+            silindiMi: comment.silindiMi,
             begeniSayisi: reactions.begeni,
             begenmemeSayisi: reactions.begenmeme,
             kullaniciTepkisi: reactions.kullaniciTepkisi,
@@ -120,18 +122,33 @@ exports.comments_post = async (req, res, next) => {
     const { icerik, parentid } = req.body;
 
     try {
+        const user = await User.findByPk(userid, { attributes: ["yorumEngelliMi"] });
+
+        if (user?.yorumEngelliMi) {
+            return res.status(403).json({
+                success: false,
+                message: "Yorum yapma yetkiniz kısıtlanmış."
+            });
+        }
+
+        const blog = await Blog.findByPk(blogid, { attributes: ["yorumlaraKapaliMi"] });
+
+        if (blog?.yorumlaraKapaliMi) {
+            return res.status(403).json({
+                success: false,
+                message: "Bu blogun yorumları kapatılmış."
+            });
+        }
+
+        const adminMi = (req.user.roles || []).includes("admin");
+
         let derinlik = 0;
 
         if (parentid) {
             const parent = await Comment.findOne({ where: { commentid: parentid, blogid } });
-
             if (!parent) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Yanıt verilen yorum bulunamadı."
-                });
+                return res.status(404).json({ success: false, message: "Yanıt verilen yorum bulunamadı." });
             }
-
             derinlik = Math.min(parent.derinlik + 1, MAX_DERINLIK);
         }
 
@@ -140,7 +157,8 @@ exports.comments_post = async (req, res, next) => {
             userid,
             parentid: parentid || null,
             icerik,
-            derinlik
+            derinlik,
+            onay: adminMi   
         });
 
         const withUser = await Comment.findByPk(comment.commentid, {
@@ -149,7 +167,8 @@ exports.comments_post = async (req, res, next) => {
 
         return res.status(201).json({
             success: true,
-            message: "Yorum eklendi.",
+            message: adminMi ? "Yorumunuz eklendi." : "Yorumunuz gönderildi, admin onayı bekleniyor.",
+            onaylandiMi: adminMi,
             data: {
                 commentid: withUser.commentid,
                 icerik: withUser.icerik,
@@ -214,6 +233,24 @@ exports.comment_reaction_post = async (req, res, next) => {
             }
         });
 
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+exports.yorum_sil_delete = async (req, res, next) => {
+    const commentid = req.params.commentid;
+    try {
+        const yorum = await Comment.findByPk(commentid);
+        if (!yorum) {
+            return res.status(404).json({ success: false, message: "Yorum bulunamadı." });
+        }
+
+        yorum.silindiMi = true;
+        await yorum.save();
+
+        return res.status(200).json({ success: true, message: "Yorum kaldırıldı." });
     } catch (err) {
         next(err);
     }

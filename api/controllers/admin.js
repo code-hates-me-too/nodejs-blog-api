@@ -503,21 +503,31 @@ exports.blogs_get = async (req, res, next) => {
 }; 
 
 exports.users_get = async (req, res, next) => {
-    const message = req.session.message || null;
-    req.session.message = null; 
     try {
-        const users = await User.findAll({
-            attributes: ["userid", "fullname", "email", "username", "avatar"],
-            include: {
-                model: Role,
-                attributes: ["rolename"]
-            }
+        let page = Number(req.query.page);
+        if (!Number.isInteger(page) || page < 0) page = 0;
+        const size = 20;
+
+        const { rows, count } = await User.findAndCountAll({
+            attributes: ["userid", "fullname", "username", "email", "avatar", "yorumEngelliMi"],
+            include: { model: Role, attributes: ["roleid", "rolename"] },
+            limit: size,
+            offset: page * size,
+            distinct: true,
+            order: [["userid", "ASC"]]
         });
 
         return res.status(200).json({
             success: true,
-            data: users
+            data: rows,
+            pagination: {
+                totalItems: count,
+                totalPages: Math.ceil(count / size),
+                currentPage: page,
+                pageSize: size
+            }
         });
+
     } catch (err) {
         next(err);
     }
@@ -879,6 +889,7 @@ exports.users_search_get = async (req, res, next) => {
                 username: { [Op.like]: `%${query}%` }
             },
             attributes: ["userid", "username", "email", "avatar"],
+            include: { model: Role, attributes: ["roleid", "rolename"] },
             limit: 10
         });
 
@@ -937,3 +948,28 @@ exports.blog_duzenleme_iptal_put = async (req, res, next) => {
         next(err);
     }
 };
+
+exports.kullanici_yorum_engelle_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
+        }
+
+        user.yorumEngelliMi = !user.yorumEngelliMi;
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: user.yorumEngelliMi
+                ? "Kullanıcının yorum yapması engellendi."
+                : "Kullanıcının yorum yapma engeli kaldırıldı.",
+            data: { yorumEngelliMi: user.yorumEngelliMi }
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+

@@ -175,6 +175,27 @@ exports.blog_aktif_put = async (req, res, next) => {
     }
 };
 
+exports.blog_yorum_kapat_put = async (req, res, next) => {
+    const blogid = req.params.blogid;
+    try {
+        const blog = await Blog.findByPk(blogid);
+        if (!blog) return res.status(404).json({ success: false, message: "Blog bulunamadı." });
+
+        blog.yorumlaraKapaliMi = !blog.yorumlaraKapaliMi;
+        await blog.save();
+
+        return res.status(200).json({
+            success: true,
+            message: blog.yorumlaraKapaliMi
+                ? "Blog yorumlara kapatıldı."
+                : "Blog yorumlara açıldı.",
+            data: { yorumlaraKapaliMi: blog.yorumlaraKapaliMi }
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.bekleyen_yorumlar_get = async (req, res, next) => {
     try {
         const yorumlar = await Comment.findAll({

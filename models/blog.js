@@ -91,6 +91,11 @@ const Blog = sequelize.define("blog", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    yorumlaraKapaliMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     freezeTableName: true,

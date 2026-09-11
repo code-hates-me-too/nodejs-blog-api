@@ -14,6 +14,7 @@ router.put("/bloglar/:blogid/onayla", verifyToken, requireRole("admin"), onayCon
 router.put("/bloglar/:blogid/reddet", verifyToken, requireRole("admin"), onayController.blog_reddet_put);
 router.put("/bloglar/:blogid/pasif", verifyToken, requireRole("admin"), onayController.blog_pasif_put);
 router.put("/bloglar/:blogid/aktif", verifyToken, requireRole("admin"), onayController.blog_aktif_put);
+router.put("/bloglar/:blogid/yorum-kapat", verifyToken, requireRole("admin"), onayController.blog_yorum_kapat_put);
 
 router.get("/yorumlar", verifyToken, requireRole("admin"), onayController.bekleyen_yorumlar_get);
 router.put("/yorumlar/:commentid/onayla", verifyToken, requireRole("admin"), onayController.yorum_onayla_put);

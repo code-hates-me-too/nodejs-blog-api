@@ -42,7 +42,12 @@ const User = sequelize.define("user", {
         unique: { args: true, msg: "Bu email daha önce kullanılmış" },
         validate: {
             notEmpty: { msg: "Email girmelisiniz" },
-            isEmail: { msg: "Hatalı email biçimi" }
+            isEmail: { msg: "Hatalı email biçimi" },
+            gmailKontrolu(value) {
+                if (value && !value.toLowerCase().endsWith("@gmail.com")) {
+                    throw new Error("Sadece Gmail adresleriyle kayıt olabilirsiniz.");
+                }
+            }
         }
     },
     password: {
@@ -75,6 +80,24 @@ const User = sequelize.define("user", {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
+    },
+    emailDogrulandiMi: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+    },
+    dogrulamaTokeni: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    dogrulamaTokenSuresi: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    yorumEngelliMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     timestamps: true

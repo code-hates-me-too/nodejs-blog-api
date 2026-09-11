@@ -18,4 +18,8 @@ router.post("/new-password", authController.newpassword_post);
 
 router.get("/check-username", optionalAuth, authController.check_username);
 
+router.get("/verify-email/:token", authController.verify_email_get);
+
+router.post("/resend-verification", authController.resend_verification_post);
+
 module.exports = router;

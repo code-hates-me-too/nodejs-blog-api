@@ -13,13 +13,135 @@ async function populate() {
             fullname: "hokoko",
             username: "hokokoyum",
             email: "info@hokoko.com",
-            password: await bcrypt.hash("12345", 10)
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
         },
         {
             fullname: "mokoko",
             username: "mokokoyum",
             email: "info@mokoko.com",
-            password: await bcrypt.hash("12345", 10)
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m9okoaskoyum",
+            email: "info@mokdsoko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "moko24956koy9um",
+            email: "info@moko2ko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m245o99kokoyum",
+            email: "info@mok245oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mo9kok99o245yum",
+            email: "info@moko4ko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m6oko65koyu9m",
+            email: "info@m24okoko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mo65496kokoyum",
+            email: "info@mokok2456o.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mokokoy66u99m",
+            email: "inf6o@mokok6o.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m66429okoko66yum",
+            email: "in45fo@mok4oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mok245okoy99um",
+            email: "info@moko4562ko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mok99o2456koyu9m",
+            email: "i2456nfo@mokoko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "moko654koyum",
+            email: "in6fo@moko6645ko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mokok25oy6um",
+            email: "info@mokoko66.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m24666okokoyum",
+            email: "in6462fo@mokoko.c2om",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mo5koko4645yum",
+            email: "in6fo@mok254oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mokok642oyum654",
+            email: "in67fo@mokoko.com75",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "m76okokoyu77m",
+            email: "in6fo@mo56k56oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "moko99k577yum7",
+            email: "i5675nfo@mok99oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "moko789k577yum7",
+            email: "i56759nfo@mok9oko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mokok577yum7",
+            email: "i5675nfo@mokoko.co99m",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
+        },{
+            fullname: "mokoko",
+            username: "mo9kok577yum7",
+            email: "i5675nfo789@mokoko.com",
+            password: await bcrypt.hash("12345", 10),
+            emailDogrulandiMi: true
         },
     ]);
 

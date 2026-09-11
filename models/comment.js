@@ -25,6 +25,11 @@ const Comment = sequelize.define("comment", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    silindiMi: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     freezeTableName: true,
