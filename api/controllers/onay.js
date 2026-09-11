@@ -3,6 +3,9 @@ const { SNAPSHOT_ALANLARI } = require("../../helpers/blogOnay");
 const Comment = require("../../models/comment");
 const User = require("../../models/user");
 const Notification = require("../../models/notification");
+const { Op } = require("sequelize");
+const fs = require("fs");
+
 
 
 exports.bekleyen_bloglar_get = async (req, res, next) => {
@@ -250,6 +253,101 @@ exports.yorum_reddet_delete = async (req, res, next) => {
         await yorum.destroy();
 
         return res.status(200).json({ success: true, message: "Yorum reddedildi ve silindi." });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.bekleyen_profil_degisiklikleri_get = async (req, res, next) => {
+    try {
+        const kullanicilar = await User.findAll({
+            where: {
+                [Op.or]: [
+                    { bekleyenKullaniciAdi: { [Op.ne]: null } },
+                    { bekleyenAvatar: { [Op.ne]: null } }
+                ]
+            },
+            attributes: ["userid", "username", "bekleyenKullaniciAdi", "avatar", "bekleyenAvatar"]
+        });
+
+        return res.status(200).json({ success: true, data: kullanicilar });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.kullanici_adi_onayla_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user || !user.bekleyenKullaniciAdi) {
+            return res.status(400).json({ success: false, message: "Onay bekleyen bir kullanıcı adı yok." });
+        }
+
+        user.username = user.bekleyenKullaniciAdi;
+        user.bekleyenKullaniciAdi = null;
+        user.sonKullaniciAdiDegisimi = new Date();
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Kullanıcı adı onaylandı." });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.kullanici_adi_reddet_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user) return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
+
+        user.bekleyenKullaniciAdi = null;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Kullanıcı adı değişikliği reddedildi." });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.avatar_onayla_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user || !user.bekleyenAvatar) {
+            return res.status(400).json({ success: false, message: "Onay bekleyen bir fotoğraf yok." });
+        }
+
+        const eskiAvatar = user.avatar;
+
+        user.avatar = user.bekleyenAvatar;
+        user.bekleyenAvatar = null;
+        await user.save();
+
+        if (eskiAvatar) {
+            fs.unlink("./public/avatars/" + eskiAvatar, err => { if (err) console.log(err); });
+        }
+
+        return res.status(200).json({ success: true, message: "Profil fotoğrafı onaylandı." });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.avatar_reddet_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user) return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
+
+        if (user.bekleyenAvatar) {
+            fs.unlink("./public/avatars/" + user.bekleyenAvatar, err => { if (err) console.log(err); });
+        }
+
+        user.bekleyenAvatar = null;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Profil fotoğrafı reddedildi." });
     } catch (err) {
         next(err);
     }

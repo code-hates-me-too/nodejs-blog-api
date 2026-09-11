@@ -36,6 +36,18 @@ const User = sequelize.define("user", {
             }
         }
     },
+    bekleyenKullaniciAdi: {
+        type: DataTypes.STRING(30),
+        allowNull: true,
+        unique: {
+            args: true,
+            msg: "Bu kullanıcı adı zaten onay bekliyor."
+        }
+    },
+    sonKullaniciAdiDegisimi: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -57,14 +69,11 @@ const User = sequelize.define("user", {
             notEmpty: { msg: "Parola boş geçilemez" }
         }
     },
-    bio: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        validate: {
-            len: { args: [0, 500], msg: "Biyografi en fazla 500 karakter olabilir" }
-        }
-    },
     avatar: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    bekleyenAvatar: {
         type: DataTypes.STRING,
         allowNull: true
     },

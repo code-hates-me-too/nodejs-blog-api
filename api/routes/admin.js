@@ -32,6 +32,8 @@ router.put("/blogs/:blogid", verifyToken, requireRole("admin", "moderator"), ima
 
 router.get("/blogs", verifyToken, requireRole("admin", "moderator"), adminController.blogs_get); 
 
+router.put("/users/:userid/avatar-kaldir", verifyToken, requireRole("admin"), adminController.users_avatar_remove_put);
+
 router.put("/users/:userid/yorum-engeli", verifyToken, requireRole("admin"), adminController.kullanici_yorum_engelle_put);
 
 router.get("/users", verifyToken, requireRole("admin"), adminController.users_get);

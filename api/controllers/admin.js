@@ -11,6 +11,7 @@ const { addRoleToUser, removeRoleFromUser } = require("../../services/roleServic
 const { setUserRoles } = require("../../services/roleService");
 const { oncekiHaliYakala } = require("../../helpers/blogOnay");
 const { SNAPSHOT_ALANLARI } = require("../../helpers/blogOnay");
+const { temizle } = require("../../helpers/sanitizeBlog");
 
 exports.categories_delete_delete = async (req, res, next) => {
     const { id } = req.params;
@@ -309,7 +310,7 @@ exports.blog_create_post = async (req, res, next) => {
 
     try {
         const blog = await Blog.create({
-            baslik, altbaslik, aciklama, resim, userid,
+            baslik, altbaslik, aciklama: temizle(aciklama), resim, userid,
             onay: adminMi,
             ilkOnayVerildiMi: adminMi
         }, { transaction: t });
@@ -417,8 +418,8 @@ exports.blog_edit_put = async (req, res, next) => {
 
         blog.baslik = baslik;
         blog.altbaslik = altbaslik;
-        blog.aciklama = aciklama;
-
+        blog.aciklama = temizle(aciklama);
+        
         if (req.file) {
             blog.resim = req.file.filename;
         } else if (resimKaldir) {
@@ -570,7 +571,7 @@ exports.users_edit_get = async (req, res, next) => {
 
 exports.users_edit_put = async (req, res, next) => {
     const userid = req.params.userid;
-    const { fullname, email, roles } = req.body;
+    const { email, username, roles } = req.body;
     const currentUserId = req.user.userid;
 
     try {
@@ -583,8 +584,14 @@ exports.users_edit_put = async (req, res, next) => {
             });
         }
 
-        user.fullname = fullname;
         user.email = email;
+
+        if (username !== undefined && username !== user.username) {
+            user.username = username;
+            user.sonKullaniciAdiDegisimi = new Date();
+            user.bekleyenKullaniciAdi = null;
+        }
+
         await user.save();
 
         if (roles) {
@@ -594,7 +601,7 @@ exports.users_edit_put = async (req, res, next) => {
 
         const updatedUser = await User.findOne({
             where: { userid },
-            attributes: ["userid", "fullname", "email"],
+            attributes: ["userid", "fullname", "email", "username"],
             include: { model: Role, attributes: ["roleid", "rolename"] }
         });
 
@@ -968,6 +975,25 @@ exports.kullanici_yorum_engelle_put = async (req, res, next) => {
             data: { yorumEngelliMi: user.yorumEngelliMi }
         });
 
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.users_avatar_remove_put = async (req, res, next) => {
+    const userid = req.params.userid;
+    try {
+        const user = await User.findByPk(userid);
+        if (!user) return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
+
+        if (user.avatar) {
+            fs.unlink("./public/avatars/" + user.avatar, err => { if (err) console.log(err); });
+        }
+
+        user.avatar = null;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Profil fotoğrafı kaldırıldı." });
     } catch (err) {
         next(err);
     }

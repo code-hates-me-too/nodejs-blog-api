@@ -1,6 +1,7 @@
 const Comment = require("../../models/comment");
 const CommentReaction = require("../../models/commentReaction");
 const User = require("../../models/user");
+const Role = require("../../models/role");
 const Blog = require("../../models/blog");
 const { Op } = require("sequelize");
 
@@ -49,7 +50,12 @@ function buildCommentTree(allComments, reactionSummary) {
             icerik: comment.silindiMi ? null : comment.icerik,
             derinlik: comment.derinlik,
             createdAt: comment.createdAt,
-            user: comment.silindiMi ? null : comment.user,
+            user: comment.silindiMi || !comment.user ? null : {
+                userid: comment.user.userid,
+                username: comment.user.username,
+                avatar: comment.user.avatar,
+                roles: (comment.user.roles || []).map(r => r.rolename)
+            },
             silindiMi: comment.silindiMi,
             begeniSayisi: reactions.begeni,
             begenmemeSayisi: reactions.begenmeme,
@@ -84,7 +90,7 @@ exports.comments_get = async (req, res, next) => {
         // bu kısmı sayfa bazlı/recursive sorguya çevirmemiz gerekecek.
         const allComments = await Comment.findAll({
             where: { blogid, onay: true },
-            include: [{ model: User, attributes: ["userid", "username", "avatar"] }],
+            include: [{ model: User, attributes: ["userid", "username", "avatar"], include: { model: Role, attributes: ["rolename"] } }],
             order: [["createdAt", "ASC"]]
         });
 
@@ -162,7 +168,7 @@ exports.comments_post = async (req, res, next) => {
         });
 
         const withUser = await Comment.findByPk(comment.commentid, {
-            include: [{ model: User, attributes: ["userid", "username", "avatar"] }]
+            include: [{ model: User, attributes: ["userid", "username", "avatar"], include: { model: Role, attributes: ["rolename"] } }]
         });
 
         return res.status(201).json({

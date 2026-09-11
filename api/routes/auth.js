@@ -3,10 +3,11 @@ const router = express.Router();
 const authController = require("../controllers/auth");
 const verifyToken = require("../middlewares/verifyToken");
 const optionalAuth = require("../middlewares/optionalAuth");
+const { loginLimiter, registerLimiter } = require("../middlewares/rateLimiters");
 
-router.post("/register", authController.register_post);
+router.post("/register", registerLimiter, authController.register_post);
 
-router.post("/login", authController.login_post);
+router.post("/login", loginLimiter, authController.login_post);
 
 router.post("/logout", verifyToken, authController.logout_post);
 
