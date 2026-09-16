@@ -296,6 +296,14 @@ exports.blog_create_get = async (req, res, next) => {
 }; 
 
 exports.blog_create_post = async (req, res, next) => {
+
+    if (req.uploadError) {
+        const msg = req.uploadError.code === "LIMIT_FILE_SIZE"
+            ? "Resim boyutu 8MB'ı geçemez."
+            : req.uploadError.message;
+        return res.status(400).json({ success: false, message: msg });
+    }
+
     const baslik = req.body.baslik;
     const altbaslik = req.body.altbaslik;
     const aciklama = req.body.aciklama;
@@ -320,8 +328,6 @@ exports.blog_create_post = async (req, res, next) => {
         }
 
         await t.commit();
-
-        // TODO Aşama 3: adminMi false ise adminlere "yeni onay bekliyor" maili
 
         return res.status(201).json({
             success: true,
@@ -487,6 +493,7 @@ exports.blogs_get = async (req, res, next) => {
                 },
                 {
                     model: User,
+                    attributes: ["userid", "username"]
                 }
             ],
             where: isModerator && !isAdmin
@@ -507,9 +514,10 @@ exports.users_get = async (req, res, next) => {
     try {
         let page = Number(req.query.page);
         if (!Number.isInteger(page) || page < 0) page = 0;
-        const size = 20;
+        const size = 10; // bu sayfaya özel
 
         const { rows, count } = await User.findAndCountAll({
+            where: { yorumEngelliMi: false },
             attributes: ["userid", "fullname", "username", "email", "avatar", "yorumEngelliMi"],
             include: { model: Role, attributes: ["roleid", "rolename"] },
             limit: size,
@@ -518,12 +526,20 @@ exports.users_get = async (req, res, next) => {
             order: [["userid", "ASC"]]
         });
 
+        const engelliKullanicilar = await User.findAll({
+            where: { yorumEngelliMi: true },
+            attributes: ["userid", "fullname", "username", "email", "avatar", "yorumEngelliMi"],
+            include: { model: Role, attributes: ["roleid", "rolename"] },
+            order: [["userid", "ASC"]]
+        });
+
         return res.status(200).json({
             success: true,
             data: rows,
+            engelliKullanicilar,
             pagination: {
                 totalItems: count,
-                totalPages: Math.ceil(count / size),
+                totalPages: Math.ceil(count / size) || 1,
                 currentPage: page,
                 pageSize: size
             }
